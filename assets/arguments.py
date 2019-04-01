@@ -141,10 +141,7 @@ def get_args():
         'Boomer-v2': 8,
         'Shooter-v4-Random': 4,
         'Snake-v3-Random': 12,
-<<<<<<< HEAD
         'Billiards-v1': 12,
-=======
->>>>>>> 91ddd416227078c5696f9ed665b6db1f97f8791a
         }[args.env_name]
     except Exception as e:
         args.skip_interval = None
