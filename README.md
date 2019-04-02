@@ -123,7 +123,7 @@ Tank_TP-v1          | W5n  |  Running  |  None | None
 // need re run but game is ok
 Fallflat-v2         | None |  None    | None | None
 
-// need regenerate game and run
+// need regenerate game (inference settings) and run
 SoccerOne-v3-Random | None |  None | None | None
 Snake-v3-Random     | None |  Done  |  Running | None
 
