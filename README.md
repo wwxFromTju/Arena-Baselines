@@ -93,14 +93,14 @@ sudo /usr/bin/X :0 &
 
 Before run any new window in a TMUX session:
 ```
-export DISPLAY=:0
+export DISPLAY=:2
 source activate Arena
 ```
 
 ## Run the code
 
 ```
-CUDA_VISIBLE_DEVICES=3 python main.py --mode train --env-name Tank_TP-v1 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 4 --eval-interval 100 --save-interval 10 --arena-start-index 11369 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode eval_population --env-name Tennis-v1-Random --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 5 --eval-interval 100 --save-interval 10 --arena-start-index 11869 --aux 17
 ```
 
 ### Procedures
@@ -113,15 +113,19 @@ CUDA_VISIBLE_DEVICES=3 python main.py --mode train --env-name Tank_TP-v1 --train
 
 Game  | Server |  train  |  eval_population | eval_human
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-Boomer-v2  | H4n |  Done  |  Done | None
-Shooter-v4-Random  | H4n |  Done  |  Done | None
-Snake-v3-Random  | W4n |  Done  |  Running | None
-SoccerOne-v3-Random | W2n | Done | None | None
-Tennis-v1-Random | W5n | Running | None | None
-Fallflat-v2 | W2n | Running | None | None
-Billiards-v1  | H4n |  Done  |  Running | None
-AirHockey-v1  | H4n |  Running  |  None | None
-Tank_TP-v1  | W5n |  Running  |  None | None
+Shooter-v4-Random   | H4n  |  Done     |  Done | None
+Boomer-v2           | H4n  |  Done     |  Done | None
+Billiards-v1        | H4n  |  Done     |  None | None
+Tennis-v1-Random    | W5n  |  Done     |  None | None
+AirHockey-v1        | H4n  |  Running  |  None | None
+Tank_TP-v1          | W5n  |  Running  |  None | None
+
+// need re run but game is ok
+Fallflat-v2         | None |  None    | None | None
+
+// need regenerate game and run
+SoccerOne-v3-Random | None |  None | None | None
+Snake-v3-Random     | None |  Done  |  Running | None
 
 ## Visualization
 
