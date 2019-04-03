@@ -113,15 +113,15 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode eval_population --env-name Tennis-v
 
 Game  | Server |  train  |  eval_population | eval_human
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-Shooter-v4-Random   | H4n  |  Done     |  Done | None
-Boomer-v2           | H4n  |  Done     |  Done | None
-Billiards-v1        | H4n  |  Done     |  None | None
-Tennis-v1-Random    | W5n  |  Done     |  None | None
-AirHockey-v1        | H4n  |  Running  |  None | None
-Tank_TP-v1          | W5n  |  Running  |  None | None
-Fallflat-v2         | None |  None    | None | None
-SoccerOne-v3-Random | None |  None | None | None
-Snake-v3-Random     | None |  Done  |  Running | None
+Shooter-v4-Random   | H4n  |  Done     |  Done    | None
+Boomer-v2           | H4n  |  Done     |  Done    | None
+Billiards-v1        | H4n  |  Done     |  None    | None
+Tennis-v1-Random    | W5n  |  Done     |  None    | None
+AirHockey-v1        | H4n  |  Running  |  None    | None
+Tank_TP-v1          | W5n  |  Running  |  None    | None
+Fallflat-v2         | None |  None     |  None    | None
+SoccerOne-v3-Random | None |  None     |  None    | None
+Snake-v3-Random     | None |  Done     |  Running | None
 
 ## Visualization
 
