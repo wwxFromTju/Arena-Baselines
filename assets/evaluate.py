@@ -70,6 +70,9 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         agents.observe(obs, reward, done, infos,
             learning_agent_mode='playing')
 
+        print(infos)
+        print("look for the shift")
+
         if display:
             for agent_i in range(agents.num_agents):
                 display_obs(
