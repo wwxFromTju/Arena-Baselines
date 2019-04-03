@@ -118,6 +118,8 @@ def main():
 
     if args.mode in ['train']:
 
+        print('# INFO: [train][starting]')
+
         obs = envs.reset()
         agents.reset(obs)
 

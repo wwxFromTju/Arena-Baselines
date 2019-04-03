@@ -154,7 +154,7 @@ def worker(remote, parent_remote, env_name, max_episode_steps, port, use_visual)
                 ob, reward, done, info = env.step(data)
                 if done.any():
                     ob = env.reset()
-                info['shift'] = env.env.env.env.shift
+                info['shift'] = env.env.env.shift
                 remote.send((ob, reward, done, info))
             elif cmd == 'reset':
                 ob = env.reset()
