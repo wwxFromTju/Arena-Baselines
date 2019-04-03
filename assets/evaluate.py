@@ -31,6 +31,10 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         background = pygame.transform.scale(background,(200,150))
         screen.blit(background,(0,0))
         pygame.display.update()
+        playground_left = pygame.image.load('./Left.jpg').convert()
+        playground_left = pygame.transform.scale(playground_left,(200,150))
+        playground_right = pygame.image.load('./Right.jpg').convert()
+        playground_right = pygame.transform.scale(playground_right,(200,150))
 
         print("# ACTION REQUIRED: Press p to start")
         while True:
@@ -70,8 +74,15 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         agents.observe(obs, reward, done, infos,
             learning_agent_mode='playing')
 
-        print(infos)
-        print("look for the shift")
+        if agent_1_is_human:
+            if infos[0]['shift']==0:
+                screen.blit(playground_right,(0,0))
+                pygame.display.update()
+            elif infos[0]['shift']==1:
+                screen.blit(playground_left,(0,0))
+                pygame.display.update()
+            # print(infos[0]['shift'])
+            # print("look for the shift")
 
         if display:
             for agent_i in range(agents.num_agents):
