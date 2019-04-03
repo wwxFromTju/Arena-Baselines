@@ -142,6 +142,7 @@ def get_args():
         'Shooter-v4-Random': 4,
         'Snake-v3-Random': 12,
         'Billiards-v1': 12,
+        'AirHockey-v1': 8,
         }[args.env_name]
     except Exception as e:
         args.skip_interval = None
