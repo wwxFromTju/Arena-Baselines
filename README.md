@@ -50,9 +50,18 @@ cd Arena-2
 pip install -r requirements.txt
 ```
 
-If you are running on a remote server without GUI (Xserver) but require a vision input, follow [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), section ```Setting up X Server (optional)```.
-If you have a Xserver but it does not belongs (started by) your user, you cannot access it.
-If you have a Xserver that belongs to (started by) you, it should be fine but I never tested it.
+## Setup X-Server
+
+If you run into following situations,
+
+* you are running on a remote server without GUI (X-Server).
+* your machine have a X-Server but it does not belongs (started by) your account, so you cannot access it.
+
+follow [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), section ```Setting up X Server (optional)```, in order to setup a virtual display and virtual X-Server.
+Or, follow guidelines below (copied from above link).
+
+* Note that if you have a X-Server belongs to your account, you can just start multiple windows held by a TMUX session when you are on the machine's GUI desktop (in this way, the window has access to X-Server). After that, connect to this machine remotely and attach the session (windows) you started on the GUI desktop.
+
 ```
 # Install Xorg
 sudo apt-get update
@@ -83,24 +92,29 @@ sudo update-initramfs -u
 sudo reboot now
 ```
 
-Create a TMUX session to hold your programe
+Kill Xorg and start vitual display
 ```
-tmux new-session -s Arena
 sudo killall Xorg
 # or use sudo init 3
 sudo /usr/bin/X :0 &
 ```
 
-Before run any new window in a TMUX session:
+Before run in a new window:
 ```
 export DISPLAY=:0
-source activate Arena
 ```
 
 ## Run the code
 
+Crate TMUX session and enter virtual environment
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode eval_population --env-name Fallflat-v2 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 5 --eval-interval 100 --save-interval 10 --arena-start-index 13569 --aux 17
+tmux new-session -s Arena
+source activate Arena
+```
+
+Run the code
+```
+CUDA_VISIBLE_DEVICES=3 python main.py --mode test_obs --env-name SoccerOne-v3-Random --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 5 --eval-interval 100 --save-interval 10 --arena-start-index 11569 --aux 17
 ```
 
 ### Procedures
@@ -118,10 +132,10 @@ Boomer-v2           | H4n  |  Done     |  Done    | None
 Billiards-v1        | H4n  |  Done     |  None    | None
 Tennis-v1-Random    | W5n  |  Done     |  None    | None
 AirHockey-v1        | H4n  |  Done     |  Running | None
-Tank_TP-v1          | W5n  |  Running  |  None    | None
+Tank_TP-v1          | W5n  |  Done     |  Running | None
 Fallflat-v2         | H4n  |  Done     |  Running | None
 SoccerOne-v3-Random | None |  None     |  None    | None
-Snake-v3-Random     | None |  Done     |  Running | None
+Snake-v3-Random     | None |  Done     |  None    | None
 
 ## Visualization
 
@@ -136,12 +150,6 @@ If your port is blocked, use natapp to forward a port:
 ./natapp --authtoken 710a6e3d5b6c23a5
 ```
 
-## Evaluate
-
-To evaluate your agent in our gladiators, run:
-```
-```
-
 ## More details about baselines provided
 
 Baseline self-play we provided:
@@ -153,7 +161,7 @@ Baseline self-play we provided:
 
 ## Build Games
 
-* Source code of games are located in ```./ArenaEnvProjects/```, every game is a independent unity project.
+* Source code of games are located in ```./ArenaEnvProjects/```, every game is a independent unity project (the project of games are now removed from this repo).
 * Make sure you go to Build Settings > Player Settings and switch "Display Resolution Dialog" to Disabled or Hidden By Default.
 * Build the game with right platform (Linux x86), put the binary file in ```./Bin/```. Name it ```<GameName-Platform>```, for example ```Tennis-Linux```.
 

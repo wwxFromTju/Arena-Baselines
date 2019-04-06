@@ -51,7 +51,7 @@ def main():
             device = args.device,
         )
 
-    if (args.eval_interval is not None) or (args.eval_population in ['eval_population','eval_human','eval_round']):
+    if (args.eval_interval is not None) or (args.eval_population in ['eval_population','eval_human','eval_round','test_obs']):
         eval_envs = make_arena(
             env_name=args.env_name,
             max_episode_steps = args.max_episode_steps,
@@ -179,6 +179,19 @@ def main():
                     compute_win_loss_rate=False,
                     tf_summary=tf_summary,
                 )
+
+    elif args.mode in ['test_obs']:
+        evaluate(
+            eval_envs=eval_envs,
+            agents=agents,
+            num_eval_episodes=args.num_eval_episodes,
+            summary_video=False,
+            vis_curves=False,
+            compute_win_loss_rate=True,
+            tf_summary=tf_summary,
+            save_obs=True,
+            log_dir=args.log_dir,
+        )
 
     elif args.mode in ['eval_population','eval_human','eval_round']:
 

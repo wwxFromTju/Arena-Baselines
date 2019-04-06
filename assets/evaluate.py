@@ -13,7 +13,12 @@ def display_obs(name,x):
     cv2.imshow(name,cv2.resize(x, (720, 720)))
     cv2.waitKey(100)
 
-def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=False,compute_win_loss_rate=False,agent_1_is_human=False,tf_summary=None,display=False):
+def save_obs(log_dir,name,x):
+    cv2.imwrite(os.path.join(log_dir,name+'.jpg'),x)
+    cv2.waitKey(100)
+
+def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=False,compute_win_loss_rate=False,\
+    agent_1_is_human=False,tf_summary=None,display_obs=False,save_obs=False,log_dir=None):
 
     '''reset'''
     obs = eval_envs.reset()
@@ -44,7 +49,11 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
                 print('# INFO: Go!')
                 break
 
+    step_i = -1
+
     while agents.learning_agent.episode_scaler_summary.get_length() < num_eval_episodes:
+
+        step_i += 1
 
         '''act'''
         action = agents.act(
@@ -81,15 +90,23 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
             elif infos[0]['shift']==1:
                 screen.blit(playground_left,(0,0))
                 pygame.display.update()
-            # print(infos[0]['shift'])
-            # print("look for the shift")
 
-        if display:
+        if display_obs or save_obs:
             for agent_i in range(agents.num_agents):
-                display_obs(
-                    name = 'obs (agent {})'.format(agent_i),
-                    x = obs[0,agent_i][-1].cpu().numpy(),
-                )
+                x = obs[0,agent_i][-1].cpu().numpy()
+                name = 'obs_a-{}'.format(agent_i)
+                if display_obs:
+                    display_obs(
+                        name = name,
+                        x = x,
+                    )
+                elif save_obs:
+                    name += '_f-{}'.format(step_i)
+                    save_obs(
+                        log_dir = log_dir,
+                        name = name,
+                        x = x,
+                    )
 
         '''summary_video'''
         if summary_video:

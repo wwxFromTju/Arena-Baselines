@@ -8,6 +8,7 @@ def get_args():
 
     parser.add_argument('--mode', type=str, default='train',
                         help='\
+                            [test_obs: test if obs make sense (normally neeeded when you setup the virtual display)]\
                             [train: standard training]\
                             [eval_population: evaluate population performance]\
                             [eval_human: evaluate against human player]\
@@ -143,6 +144,8 @@ def get_args():
         'Snake-v3-Random': 12,
         'Billiards-v1': 12,
         'AirHockey-v1': 8,
+        'Fallflat-v2': 8,
+        'Tank_TP-v1': 3,
         }[args.env_name]
     except Exception as e:
         args.skip_interval = None
