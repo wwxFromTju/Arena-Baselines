@@ -14,11 +14,11 @@ def display_obs(name,x):
     cv2.waitKey(100)
 
 def save_obs(log_dir,name,x):
-    cv2.imwrite(os.path.join(log_dir,name+'.jpg'),x)
-    cv2.waitKey(100)
+    cv2.imwrite(os.path.join(log_dir,name+'.jpg'),(x*255.0).astype(np.uint8))
+    input('save another?')
 
 def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=False,compute_win_loss_rate=False,\
-    agent_1_is_human=False,tf_summary=None,display_obs=False,save_obs=False,log_dir=None):
+    agent_1_is_human=False,tf_summary=None,is_display_obs=False,is_save_obs=False,log_dir=None):
 
     '''reset'''
     obs = eval_envs.reset()
@@ -95,12 +95,12 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
             for agent_i in range(agents.num_agents):
                 x = obs[0,agent_i][-1].cpu().numpy()
                 name = 'obs_a-{}'.format(agent_i)
-                if display_obs:
+                if is_display_obs:
                     display_obs(
                         name = name,
                         x = x,
                     )
-                elif save_obs:
+                elif is_save_obs:
                     name += '_f-{}'.format(step_i)
                     save_obs(
                         log_dir = log_dir,
