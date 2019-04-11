@@ -1,176 +1,65 @@
-4/3/2019 10:00:10 PM
+4/11/2019 7:17:37 PM
  
 Log
-AgentA reset with reward 0
+Team T1 Start
 
 Log
-AgentB reset with reward 0
+GlobalManager Start
 
 Log
-AgentA reset with reward 0
+Team T0 Start
 
 Log
-AgentB reset with reward 0
+Agent T1 A0 Start
 
 Log
-AgentA trig loss
+Agent T0 A0 Start
 
 Log
-AgentA reset with reward 0
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentB reset with reward 1
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentA reset with reward 0
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentB reset with reward 0
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentB trig loss
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentA reset with reward 1
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentB reset with reward 0
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentA reset with reward 0
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentB reset with reward 0
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentA trig loss
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentA reset with reward 0
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentB reset with reward 1
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentA reset with reward 0
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentB reset with reward 0
+Agent T0 A0 reset at limit 1000
 
 Log
-AgentA trig loss
+Agent T1 A0 reset at limit 1000
 
 Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 1
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentB trig loss
-
-Log
-AgentA reset with reward 1
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA trig loss
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 1
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA trig loss
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 1
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA trig loss
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 1
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentB trig loss
-
-Log
-AgentA reset with reward 1
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentB trig loss
-
-Log
-AgentA reset with reward 1
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
-
-Log
-AgentA reset with reward 0
-
-Log
-AgentB reset with reward 0
+Agent T0 A0 reset at limit 1000
 
