@@ -189,7 +189,7 @@ def main():
             vis_curves=False,
             compute_win_loss_rate=True,
             tf_summary=tf_summary,
-            save_obs=True,
+            is_save_obs=True,
             log_dir=args.log_dir,
         )
 

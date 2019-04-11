@@ -135,7 +135,7 @@ AirHockey-v1        | H4n  |  Done     |  Done    | None
 Tank_TP-v1          | W5n  |  Done     |  Running | None
 Fallflat-v2         | H4n  |  Done     |  Done    | None
 SoccerOne-v3-Random | H4n  |  Running  |  None    | None
-Snake-v3-Random     | None |  Done     |  None    | None
+Snake-v3-Random     | W2n  |  Running  |  None    | None
 Soccer_2T1P-v1      | H4n  |  None     |  None    | None
 
 ## Visualization
