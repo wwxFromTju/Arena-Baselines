@@ -17,8 +17,44 @@ def save_obs(log_dir,name,x):
     cv2.imwrite(os.path.join(log_dir,name+'.jpg'),(x*255.0).astype(np.uint8))
     input('save another?')
 
+def key2action(pressed, env_name):
+    action = 0
+    if 'Soccer' in env_name:
+        if pressed[pygame.K_a]:
+            action = 1
+        elif pressed[pygame.K_d]:
+            action = 2
+        elif pressed[pygame.K_w]:
+            action = 3
+        elif pressed[pygame.K_s]:
+            action = 4
+        elif pressed[pygame.K_q]:
+            action = 5
+        elif pressed[pygame.K_e]:
+            action = 6
+        elif pressed[pygame.K_SPACE]:
+            action = 7
+        elif pressed[pygame.K_f]:
+            action = 8
+    else:
+        # if pressed[pygame.K_f]:
+        #     action[0,1,0] = 5
+        # elif pressed[pygame.K_w]:
+        #     action[0,1,0] = 3
+        # elif pressed[pygame.K_a]:
+        #     action[0,1,0] = 1
+        # elif pressed[pygame.K_s]:
+        #     action[0,1,0] = 4
+        # elif pressed[pygame.K_d]:
+        #     action[0,1,0] = 2
+        # elif pressed[K_ESCAPE]:
+        #     break
+        pass
+    return action
+
+
 def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=False,compute_win_loss_rate=False,\
-    agent_1_is_human=False,tf_summary=None,is_display_obs=False,is_save_obs=False,log_dir=None):
+    agent_1_is_human=False,tf_summary=None,is_display_obs=False,is_save_obs=False,log_dir=None,env_name=None):
 
     '''reset'''
     obs = eval_envs.reset()
@@ -63,20 +99,7 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
         if agent_1_is_human:
             pygame.event.pump()
-            action[0,1,0] = 0
-            pressed = pygame.key.get_pressed()
-            if pressed[pygame.K_f]:
-                action[0,1,0] = 5
-            elif pressed[pygame.K_w]:
-                action[0,1,0] = 3
-            elif pressed[pygame.K_a]:
-                action[0,1,0] = 1
-            elif pressed[pygame.K_s]:
-                action[0,1,0] = 4
-            elif pressed[pygame.K_d]:
-                action[0,1,0] = 2
-            elif pressed[K_ESCAPE]:
-                break
+            action[0,1,0] = key2action(pygame.key.get_pressed(), env_name)
 
         '''step'''
         obs, reward, done, infos = eval_envs.step(action)
@@ -118,7 +141,8 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
         '''log at done'''
         if done.any():
-            agents.learning_agent.log(mode='playing')
+            for agent in agents.all_agents:
+                agent.log(mode='playing')
 
     '''terminate and summary'''
 
@@ -338,10 +362,11 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
             compute_win_loss_rate=True,
             agent_1_is_human=True,
             tf_summary=tf_summary,
+            env_name=args.env_name,
         )
 
         if win_loss_rate<0.5:
-            print('You win this agent with win_loss_rate of {}! You rank at {}.'.format(win_loss_rate,sting_i))
+            print('You win this agent with win_loss_rate of {}! You rank at {}.'.format(win_loss_rate,ranking_i))
             np.save(
                 os.path.join(args.log_dir, "human_ranking_for_{}_{}_{}_agents.npy".format(
                     checkpoints_start_from,
