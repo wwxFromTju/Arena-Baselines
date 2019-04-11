@@ -114,7 +114,7 @@ source activate Arena
 
 Run the code
 ```
-CUDA_VISIBLE_DEVICES=2 python main.py --mode train --env-name Snake-v3-Random --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 5 --eval-interval 100 --save-interval 10 --arena-start-index 24549 --aux 17
+CUDA_VISIBLE_DEVICES=2 python main.py --mode train --env-name Snake-v3-Random --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 5 --eval-interval 100 --save-interval 10 --arena-start-index 24549 --aux 17
 ```
 
 ### Procedures
@@ -135,7 +135,7 @@ AirHockey-v1        | H4n  |  Done     |  Done    | None
 Tank_TP-v1          | W5n  |  Done     |  Running | None
 Fallflat-v2         | H4n  |  Done     |  Done    | None
 SoccerOne-v3-Random | H4n  |  Running  |  None    | None
-Snake-v3-Random     | None |  Done     |  None    | None
+Snake-v3-Random     | W2n  |  Running  |  None    | None
 
 ## Visualization
 
