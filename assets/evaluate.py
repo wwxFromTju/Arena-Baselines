@@ -19,37 +19,34 @@ def save_obs(log_dir,name,x):
 
 def key2action(pressed, env_name):
     action = 0
-    if 'Soccer' in env_name:
-        if pressed[pygame.K_a]:
-            action = 1
-        elif pressed[pygame.K_d]:
-            action = 2
-        elif pressed[pygame.K_w]:
-            action = 3
-        elif pressed[pygame.K_s]:
-            action = 4
-        elif pressed[pygame.K_q]:
-            action = 5
-        elif pressed[pygame.K_e]:
-            action = 6
-        elif pressed[pygame.K_SPACE]:
-            action = 7
-        elif pressed[pygame.K_f]:
-            action = 8
-    else:
-        # if pressed[pygame.K_f]:
-        #     action[0,1,0] = 5
-        # elif pressed[pygame.K_w]:
-        #     action[0,1,0] = 3
-        # elif pressed[pygame.K_a]:
-        #     action[0,1,0] = 1
-        # elif pressed[pygame.K_s]:
-        #     action[0,1,0] = 4
-        # elif pressed[pygame.K_d]:
-        #     action[0,1,0] = 2
-        # elif pressed[K_ESCAPE]:
-        #     break
-        pass
+    if pressed[pygame.K_a]:
+        action = 1
+    elif pressed[pygame.K_d]:
+        action = 2
+    elif pressed[pygame.K_w]:
+        action = 3
+    elif pressed[pygame.K_s]:
+        action = 4
+    elif pressed[pygame.K_q]:
+        action = 5
+    elif pressed[pygame.K_e]:
+        action = 6
+    elif pressed[pygame.K_SPACE]:
+        action = 7
+    elif pressed[pygame.K_f]:
+        action = 8
+    # if pressed[pygame.K_f]:
+    #     action[0,1,0] = 5
+    # elif pressed[pygame.K_w]:
+    #     action[0,1,0] = 3
+    # elif pressed[pygame.K_a]:
+    #     action[0,1,0] = 1
+    # elif pressed[pygame.K_s]:
+    #     action[0,1,0] = 4
+    # elif pressed[pygame.K_d]:
+    #     action[0,1,0] = 2
+    # elif pressed[K_ESCAPE]:
+    #     break
     return action
 
 
@@ -107,6 +104,11 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
             learning_agent_mode='playing')
 
         if agent_1_is_human:
+            name = 'obs_a-{}'.format(1)
+            display_obs(
+                name = 'obs_a-{}'.format(1),
+                x = obs[0,1][-1].cpu().numpy(),
+            )
             if infos[0]['shift']==0:
                 screen.blit(playground_right,(0,0))
                 pygame.display.update()
@@ -363,6 +365,7 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
             agent_1_is_human=True,
             tf_summary=tf_summary,
             env_name=args.env_name,
+            is_display_obs=False,
         )
 
         if win_loss_rate<0.5:
