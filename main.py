@@ -174,7 +174,7 @@ def main():
                     eval_envs=eval_envs,
                     agents=agents,
                     num_eval_episodes=args.num_eval_episodes,
-                    summary_video=True,
+                    summary_video=False,
                     vis_curves=True,
                     compute_win_loss_rate=False,
                     tf_summary=tf_summary,
