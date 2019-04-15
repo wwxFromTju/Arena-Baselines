@@ -114,7 +114,7 @@ source activate Arena
 
 Run the code
 ```
-CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Fighter_2T1P-v2 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 2 --eval-interval 100 --save-interval 10 --arena-start-index 30169 --aux 17
+CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Soccer_2T1P-v2 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 2 --eval-interval 100 --save-interval 10 --arena-start-index 30169 --aux 17
 ```
 
 ### Procedures
@@ -146,6 +146,7 @@ BlowBlow_2T1P-v2    | H4n  |  Done     |  Done (mess)    | None
 Fighter_2T1P-v2     | W5n  |  Running  |  None    | None
 Tennis_2T1P-v2      | W2n  |  Done     |  Done (transitive)    | None
 Soccer_2T1P-v2      | H4n  |  Running  |  None    | None
+Snake_2T1P-v2       | W2n  |  Running  |  None    | None
 
 ## Visualization
 
