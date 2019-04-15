@@ -162,9 +162,17 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
     if compute_win_loss_rate:
         assert agents.num_agents==2
+        episode_totals = [
+            len(agents.all_agents[0].episode_scaler_summary.final_rewards['raw']),
+            len(agents.all_agents[1].episode_scaler_summary.final_rewards['raw'])
+        ]
+        episode_total = min(episode_totals)
+        num_mismatch = episode_totals[0]-episode_totals[1]
+        if abs(num_mismatch)>1:
+            print('# WARNING: : episode_totals missed matched too much {}'.format(num_mismatch))
         '''return win-loss rate'''
         win_loss_record = []
-        for espisode_i in range(len(agents.learning_agent.episode_scaler_summary.final_rewards['raw'])):
+        for espisode_i in range(episode_total):
             if agents.learning_agent.episode_scaler_summary.final_rewards['raw'][espisode_i]>agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [1.0]
             elif agents.learning_agent.episode_scaler_summary.final_rewards['raw'][espisode_i]<agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
