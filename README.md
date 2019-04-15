@@ -141,9 +141,11 @@ Soccer_2T1P-v1      | H4n  |  Running  |  None    | None
 BlowBlow_2T1P-v1    | H4n  |  Quit     |  None    | None
 Fighter_2T1P-v1     | W5n  |  Done     |  None    | None
 Tennis_2T1P-v1      | W2n  |  Done     |  None    | None
-BlowBlow_2T1P-v2    | H4n  |  Running  |  None    | None
+
+BlowBlow_2T1P-v2    | H4n  |  Done     |  Done (mess)    | None
 Fighter_2T1P-v2     | W5n  |  Running  |  None    | None
-Tennis_2T1P-v2      | W2n  |  Running  |  None    | None
+Tennis_2T1P-v2      | W2n  |  Done     |  Done (transitive)    | None
+Soccer_2T1P-v2      | H4n  |  Running  |  None    | None
 
 ## Visualization
 
