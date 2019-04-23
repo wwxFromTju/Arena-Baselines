@@ -190,7 +190,22 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
         return win_loss_rate
 
+def get_possible_win_loss_matrixs(log_dir):
+    '''get possible_win_loss_matrixs'''
+    import glob, os
+    possible_win_loss_matrixs = []
+    for file in glob.glob(os.path.join(log_dir, 'win_loss_matrix_for_*_agents.npy')):
+        possible_win_loss_matrixs += [int(file.split(log_dir)[1].split('_agents.npy')[0].split('win_loss_matrix_for_')[1])]
+    return possible_win_loss_matrixs
+
 def load_win_loss_matrix(agents,args):
+
+    possible_win_loss_matrixs = get_possible_win_loss_matrixs(args.log_dir)
+
+    print('# INFO: possible_win_loss_matrixs are (format: [checkpoints_start_from]_[num_possible_checkpoints]_[skip_interval]):')
+    for possible_win_loss_matrix in possible_win_loss_matrixs:
+        print('-># INFO: possible_win_loss_matrix is {}'.format(possible_win_loss_matrix))
+
     '''prepare'''
     num_possible_checkpoints = agents.learning_agent.get_possible_checkpoints().shape[0]
     if args.population_eval_start is None:
