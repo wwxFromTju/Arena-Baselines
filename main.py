@@ -201,6 +201,10 @@ def main():
 
         if status in ['initilized']:
 
+            if args.mode in ['eval_human','eval_round']:
+                input('# WARNING: Mode requires a win_loss_matrix, but no win_loss_matrix is found on the disk. \
+                    Thus, I will run eval_polulation first, this could take a while. Hit enter to continue.')
+
             from assets.evaluate import generate_win_loss_matrix
             win_loss_matrix = generate_win_loss_matrix(
                 checkpoints_start_from=checkpoints_start_from,
