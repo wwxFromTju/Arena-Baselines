@@ -195,7 +195,7 @@ def get_possible_win_loss_matrixs(log_dir):
     import glob, os
     possible_win_loss_matrixs = []
     for file in glob.glob(os.path.join(log_dir, 'win_loss_matrix_for_*_agents.npy')):
-        possible_win_loss_matrixs += [int(file.split(log_dir)[1].split('_agents.npy')[0].split('win_loss_matrix_for_')[1])]
+        possible_win_loss_matrixs += [file.split(log_dir)[1].split('_agents.npy')[0].split('win_loss_matrix_for_')[1]]
     return possible_win_loss_matrixs
 
 def load_win_loss_matrix(agents,args):
