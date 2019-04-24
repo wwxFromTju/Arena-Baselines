@@ -4,7 +4,7 @@ pybullet
 libtmux
 gym_unity
 tensorboardX
-imageio==2.4.1
+imageio
 moviepy
 imageio-ffmpeg
 pygame
