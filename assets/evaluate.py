@@ -368,7 +368,20 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
     ranking_i = 0
     while True:
 
-        checkpoint_id = int(win_percentage[ranking_i,1]*skip_interval)
+        try:
+            checkpoint_id = int(win_percentage[ranking_i,1]*skip_interval)
+        except Exception as e:
+            print('# INFO: You lost all agents! You rank at {} %.'.format((1.0-float(ranking_i)/float(win_percentage.shape[0]))))
+            np.save(
+                os.path.join(args.log_dir, "human_ranking_for_{}_{}_{}_agents.npy".format(
+                    checkpoints_start_from,
+                    num_possible_checkpoints,
+                    skip_interval,
+                )),
+                np.array([ranking_i]),
+            )
+            input('# ACTION REQUIRED: [eval_human][Done]')
+
         win_percentage_i = win_percentage[ranking_i,0]
         print('# INFO: [eval_human][testing agent ranking at {}, against checkpoint_id {}, win_percentage_i {}]'.format(
             ranking_i,
@@ -392,7 +405,7 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
         )
 
         if win_loss_rate<0.5:
-            print('You win this agent with win_loss_rate of {}! You rank at {}.'.format(win_loss_rate,ranking_i))
+            print('# INFO: You win this agent with win_loss_rate of {}! You rank at {}.'.format((1.0-win_loss_rate),(1.0-float(ranking_i)/float(win_percentage.shape[0]))))
             np.save(
                 os.path.join(args.log_dir, "human_ranking_for_{}_{}_{}_agents.npy".format(
                     checkpoints_start_from,
@@ -401,8 +414,8 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
                 )),
                 np.array([ranking_i]),
             )
-            input('# ACTION REQUIRED: Done')
+            input('# ACTION REQUIRED: [eval_human][Done]')
         else:
-            print('You lost this agent with win_loss_rate of {}'.format(win_loss_rate))
+            print('# INFO: You lost this agent with win_loss_rate of {}'.format(win_loss_rate))
 
         ranking_i += 1
