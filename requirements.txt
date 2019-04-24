@@ -3,7 +3,6 @@ matplotlib
 pybullet
 libtmux
 gym_unity
-mpi4py
 tensorboardX
 imageio==2.4.1
 moviepy
