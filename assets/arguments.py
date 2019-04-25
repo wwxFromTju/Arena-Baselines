@@ -68,7 +68,7 @@ def get_args():
                         help='[trainer][use a linear schedule on the ppo clipping parameter]')
 
     '''settings for self-play'''
-    parser.add_argument('--reload-playing-agents-interval', type=int, default=(60*5),
+    parser.add_argument('--reload-playing-agents-interval', type=int, default=(60*0),
                         help='[self-play][interval to switch component in seconds]')
     parser.add_argument('--reload-playing-agents-principle', type=str, default=50,
                         help = '[self-play][principle of choosing a component]\
