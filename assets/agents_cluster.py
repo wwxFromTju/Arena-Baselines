@@ -7,7 +7,7 @@ import scipy
 class MultiAgentCluster(object):
     """docstring for MultiAgentCluster."""
     def __init__(self, agents, learning_agent_id, store_interval, log_dir, \
-        reload_playing_agents_interval, reload_playing_agents_principle):
+        reload_playing_agents_interval, reload_playing_agents_principle, tf_summary):
         super(MultiAgentCluster, self).__init__()
         self.all_agents = agents
         self.learning_agent_id = learning_agent_id
@@ -15,6 +15,7 @@ class MultiAgentCluster(object):
         self.playing_agents = self.all_agents[:self.learning_agent_id]+self.all_agents[self.learning_agent_id+1:]
         self.num_agents = len(self.all_agents)
         self.log_dir = log_dir
+        self.tf_summary = tf_summary
 
         self.store_interval = store_interval
         self.last_time_store = time.time()
@@ -132,15 +133,34 @@ class MultiAgentCluster(object):
         if self.reload_playing_agents_principle in ['prioritized']:
 
             '''update current'''
-            current_checkpoint_by_index = np.where(self.checkpoints_reward_record==self.playing_agents[0].current_checkpoint_by_frame)[0][0]
             record_update_target = self.learning_agents[0].episode_scaler_summary.to_mean()['raw']
-            print('# INFO: checkpoints_reward_record of {} is being updated from {} to {}'.format(
+            self.learning_agents[0].episode_scaler_summary.reset()
+
+            current_checkpoint_by_index = np.where(self.checkpoints_reward_record==self.playing_agents[0].current_checkpoint_by_frame)[0][0]
+            record_update_from = self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD]
+
+            self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD] = record_update_target
+
+            self.tf_summary.add_scalar(
+                '{}/{}'.format('global','record update from'),
+                record_update_from,
+                self.learning_agents[0].get_num_trained_frames(),
+            )
+            self.tf_summary.add_scalar(
+                '{}/{}'.format('global','record update target'),
+                record_update_target,
+                self.learning_agents[0].get_num_trained_frames(),
+            )
+            self.tf_summary.add_scalar(
+                '{}/{}'.format('global','record improvement'),
+                (record_update_target-record_update_from),
+                self.learning_agents[0].get_num_trained_frames(),
+            )
+            print('# INFO: checkpoints_reward_record of {} has been updated from {} to {}'.format(
                 self.playing_agents[0].current_checkpoint_by_frame,
-                self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD],
+                record_update_from,
                 record_update_target
             ))
-            self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD] = record_update_target
-            self.learning_agents[0].episode_scaler_summary.reset()
 
             '''reload new'''
             probability_to_checkpoints = scipy.special.softmax(
