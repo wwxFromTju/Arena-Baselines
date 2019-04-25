@@ -115,7 +115,7 @@ source activate Arena
 
 Run the code
 ```
-CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Boomer_2T1P-v2 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --sp-switch-component-interval 10 --sp-switch-component-principle uniform --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 2 --eval-interval 100 --save-interval 10 --arena-start-index 30669 --aux 17
+CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Tennis_2T1P-v2 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 32 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30669 --aux 17
 ```
 
 ### Procedures
@@ -156,8 +156,8 @@ If your port is blocked, use natapp to forward a port:
 
 Baseline self-play we provided:
 
-* ```--sp-switch-component-principle recent``` The most naive baseline, play against recent your self.
-* ```--sp-switch-component-principle uniform``` Play against your self in the history, uniformly sampled.
+* ```--reload-playing-agents-principle recent``` The most naive baseline, play against recent your self.
+* ```--reload-playing-agents-principle uniform``` Play against your self in the history, uniformly sampled.
 
 ## Common Problems
 

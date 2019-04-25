@@ -46,10 +46,14 @@ class EpisodeScalerSummary(object):
     def get_length(self):
         return len(self.final_rewards[list(self.final_rewards.keys())[0]])
 
-    def to_mean_and_reset(self):
+    def to_mean(self):
         final_rewards_mean = {}
         for key in self.keys:
             final_rewards_mean[key] = np.mean(self.final_rewards[key])
+        return final_rewards_mean
+
+    def to_mean_and_reset(self):
+        final_rewards_mean = self.to_mean()
         self.reset()
         return final_rewards_mean
 

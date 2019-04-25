@@ -68,21 +68,23 @@ def get_args():
                         help='[trainer][use a linear schedule on the ppo clipping parameter]')
 
     '''settings for self-play'''
-    parser.add_argument('--sp-switch-component-interval', type=int, default=50,
-                        help='[self-play][interval (update_i) to switch component]')
-    parser.add_argument('--sp-switch-component-principle', type=str, default=50,
+    parser.add_argument('--reload-playing-agents-interval', type=int, default=(60*5),
+                        help='[self-play][interval to switch component in seconds]')
+    parser.add_argument('--reload-playing-agents-principle', type=str, default=50,
                         help = '[self-play][principle of choosing a component]\
-                            [recent(the most recent checkpoint), uniform(uniformly sample from historical checkpoint)]')
+                            [\
+                                recent(the most recent checkpoint),\
+                                uniform(uniformly sample from historical checkpoint),\
+                                prioritized(prioritized based on win rate),\
+                            ]')
 
     '''general but not important settings'''
     parser.add_argument('--cuda-deterministic', action='store_true', default=False,
                         help="[general][sets flags for determinism when using CUDA (potentially slow!)]")
     parser.add_argument('--log-interval', type=int, default=10,
                         help='[general][log interval, one log per n updates (default: 10)]')
-    parser.add_argument('--save-interval', type=int, default=100,
-                        help='[general][save interval, one save per n updates (default: 100)]')
-    parser.add_argument('--eval-interval', type=int, default=None,
-                        help='[general][eval interval, one eval per n updates (default: None)]')
+    parser.add_argument('--store-interval', type=int, default=int(60*10),
+                        help='[general][save interval in seconds')
     parser.add_argument('--vis-interval', type=int, default=100,
                         help='[general][vis interval, one log per n updates (default: 100)]')
     parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -113,7 +115,7 @@ def get_args():
     args.log_dir = os.path.join(args.log_dir, 'ti-{}'.format(args.trainer_id))
 
     '''self-play'''
-    args.log_dir = os.path.join(args.log_dir, 'sscp-{}'.format(args.sp_switch_component_principle))
+    args.log_dir = os.path.join(args.log_dir, 'sscp-{}'.format(args.reload_playing_agents_principle))
 
     '''general'''
     args.log_dir = os.path.join(args.log_dir, 'a-{}'.format(args.aux))

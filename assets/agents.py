@@ -8,9 +8,7 @@ from .logger import EpisodeScalerSummary
 class Agent(object):
     """docstring for Agent."""
     def __init__(self, id, envs, recurrent_brain, num_processes, num_steps, use_linear_lr_decay, use_linear_clip_decay, use_gae, gamma, tau, num_env_steps, num_updates, log_dir, tf_summary, cuda, device,
-        trainer_id, value_loss_coef, entropy_coef, lr, eps, alpha, max_grad_norm, clip_param, ppo_epoch, num_mini_batch,
-            save_interval, log_interval, vis, vis_interval,
-            sp_switch_component_interval, sp_switch_component_principle):
+        trainer_id, value_loss_coef, entropy_coef, lr, eps, alpha, max_grad_norm, clip_param, ppo_epoch, num_mini_batch, log_interval, vis, vis_interval):
         super(Agent, self).__init__()
 
         '''basic'''
@@ -37,14 +35,9 @@ class Agent(object):
         self.clip_param = clip_param
 
         '''log'''
-        self.save_interval = save_interval
         self.log_interval = log_interval
         self.vis = vis
         self.vis_interval = vis_interval
-
-        '''self-play'''
-        self.sp_switch_component_interval = sp_switch_component_interval
-        self.sp_switch_component_principle = sp_switch_component_principle
 
         '''build policy'''
         from .brains import Policy
@@ -52,7 +45,6 @@ class Agent(object):
             base_kwargs={'recurrent': self.recurrent_brain}).to(self.device)
 
         self.update_i = 0
-        self.restore(principle='recent')
         self.num_trained_frames_start = self.update_i * self.num_processes * self.num_steps
 
         '''build trainer'''
@@ -88,6 +80,8 @@ class Agent(object):
 
         self.time_start = time.time()
         self.step_i = 0
+
+        self.current_checkpoint_by_frame = 0
 
     def reset(self, obs):
         self.rollouts.obs[0].copy_(obs)
@@ -151,7 +145,7 @@ class Agent(object):
     def experience_not_enough(self):
         return (self.step_i < self.num_steps)
 
-    def learning_at_update(self):
+    def update(self):
 
         self.step_i = 0
 
@@ -169,10 +163,6 @@ class Agent(object):
 
         self.rollouts.after_update()
 
-        '''save models'''
-        if (self.update_i % self.save_interval == 0 or self.update_i == self.num_updates - 1) and self.log_dir != "":
-            self.store()
-
         '''log info by print'''
         if self.update_i % self.log_interval == 0:
             self.log('learning')
@@ -180,20 +170,6 @@ class Agent(object):
         '''vis curves'''
         if self.vis and self.update_i % self.vis_interval == 0:
             self.vis_curves('learning')
-
-    def playing_at_update(self):
-        if (self.update_i % self.sp_switch_component_interval == 0):
-            self.restore(principle=self.sp_switch_component_principle)
-
-    def at_update(self, mode):
-        if mode in ['learning']:
-            self.learning_at_update()
-        elif mode in ['playing']:
-            self.playing_at_update()
-
-        self.update_i += 1
-        if self.update_i == self.num_updates:
-            input('# ACTION REQUIRED: Train end.')
 
     def get_num_trained_frames(self):
         return self.update_i * self.num_processes * self.num_steps
@@ -223,7 +199,7 @@ class Agent(object):
 
     def vis_curves(self,mode):
         if self.episode_scaler_summary.get_length()>0:
-            tmp = self.episode_scaler_summary.to_mean_and_reset()
+            tmp = self.episode_scaler_summary.to_mean()
             for key in tmp.keys():
                 self.tf_summary.add_scalar(
                     '{}/{}'.format(mode,key),
@@ -235,6 +211,7 @@ class Agent(object):
         try:
             checkpoint = self.get_num_trained_frames()
             self.store_to_checkpoint(checkpoint)
+            self.current_checkpoint_by_frame = checkpoint
             print('# INFO: [Agent {}][Store to checkpoint {} ok]'.format(self.id,checkpoint))
 
         except Exception as e:
@@ -251,6 +228,7 @@ class Agent(object):
             possible_checkpoints = self.get_possible_checkpoints()
             checkpoint = self.get_checkpoint(possible_checkpoints,principle)
             self.restore_from_checkpoint(checkpoint)
+            self.current_checkpoint_by_frame = checkpoint
             print('# INFO: [Agent {}][Restore checkpoint {} ok from {} possible checkpoints, following principle of {}]'.format(
                 self.id,checkpoint,len(possible_checkpoints),principle))
 
@@ -297,6 +275,13 @@ class Agent(object):
 
     def get_checkpoint(self, possible_checkpoints, principle):
 
+        '''
+            recent
+            uniform
+            {}_th, according to time, ranking
+            {}_frame, according to frame
+        '''
+
         if principle in ['recent']:
             return possible_checkpoints[-1]
 
@@ -307,3 +292,6 @@ class Agent(object):
 
         elif 'th' in principle:
             return possible_checkpoints[int(principle.split('_th')[0])]
+
+        elif 'frame' in principle:
+            return int(principle.split('_frame')[0])

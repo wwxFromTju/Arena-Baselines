@@ -51,7 +51,7 @@ def main():
             device = args.device,
         )
 
-    if (args.eval_interval is not None) or (args.eval_population in ['eval_population','eval_human','eval_round','test_obs']):
+    if (args.mode in ['eval_population','eval_human','eval_round','test_obs']):
         eval_envs = make_arena(
             env_name=args.env_name,
             max_episode_steps = args.max_episode_steps,
@@ -101,24 +101,39 @@ def main():
             ppo_epoch = args.ppo_epoch,
             num_mini_batch = args.num_mini_batch,
 
-            save_interval = args.save_interval,
             log_interval = args.log_interval,
             vis = args.vis,
             vis_interval = args.vis_interval,
-
-            sp_switch_component_interval = args.sp_switch_component_interval,
-            sp_switch_component_principle = args.sp_switch_component_principle,
         )]
 
     from assets.agents_cluster import MultiAgentCluster
     agents = MultiAgentCluster(
         agents = agents,
         learning_agent_id = learning_agent_id,
+        store_interval = args.store_interval,
+        log_dir = args.log_dir,
+        reload_playing_agents_interval = args.reload_playing_agents_interval,
+        reload_playing_agents_principle = args.reload_playing_agents_principle,
     )
+    agents.restore()
+    agents.store()
+
+    '''# DEBUG: eval against'''
+    if args.eval_against is not None:
+        agents.restore_playing_agents(principle=args.eval_against)
+        evaluate(
+            eval_envs=eval_envs,
+            agents=agents,
+            num_eval_episodes=args.num_eval_episodes,
+            summary_video=False,
+            vis_curves=True,
+            compute_win_loss_rate=False,
+            tf_summary=tf_summary,
+        )
 
     if args.mode in ['train']:
 
-        print('# INFO: [train][starting]')
+        print('# INFO: Train Starting')
 
         obs = envs.reset()
         agents.reset(obs)
@@ -137,7 +152,7 @@ def main():
 
                 action = agents.act(
                     obs=obs,
-                    learning_agent_mode='learning',
+                    learning_agents_mode='learning',
                 )
 
                 if args.test_env:
@@ -147,7 +162,7 @@ def main():
                 '''step'''
                 obs, reward, done, infos = envs.step(action)
                 agents.observe(obs, reward, done, infos,
-                    learning_agent_mode='learning')
+                    learning_agents_mode='learning')
 
                 if args.test_env:
                     info = '[ID {}][S {}][R {}][D {}]'.format(
@@ -161,24 +176,7 @@ def main():
                     print('# INFO: {}'.format(info))
                     test_env_step += 1
 
-            agents.at_update(learning_agent_mode='learning')
-
-            '''eval'''
-            if (args.eval_interval is not None and agents.learning_agent.update_i % args.eval_interval == 0) \
-                or (args.eval_against is not None):
-
-                if args.eval_against is not None:
-                    agents.restore_playing_agents(principle=args.eval_against)
-
-                evaluate(
-                    eval_envs=eval_envs,
-                    agents=agents,
-                    num_eval_episodes=args.num_eval_episodes,
-                    summary_video=False,
-                    vis_curves=True,
-                    compute_win_loss_rate=False,
-                    tf_summary=tf_summary,
-                )
+            agents.at_update(learning_agents_mode='learning')
 
     elif args.mode in ['test_obs']:
         evaluate(
