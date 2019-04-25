@@ -114,6 +114,7 @@ def main():
         log_dir = args.log_dir,
         reload_playing_agents_interval = args.reload_playing_agents_interval,
         reload_playing_agents_principle = args.reload_playing_agents_principle,
+        tf_summary = tf_summary,
     )
     agents.restore()
     agents.store()

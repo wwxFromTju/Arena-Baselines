@@ -7,7 +7,7 @@ import scipy
 class MultiAgentCluster(object):
     """docstring for MultiAgentCluster."""
     def __init__(self, agents, learning_agent_id, store_interval, log_dir, \
-        reload_playing_agents_interval, reload_playing_agents_principle):
+        reload_playing_agents_interval, reload_playing_agents_principle, tf_summary):
         super(MultiAgentCluster, self).__init__()
         self.all_agents = agents
         self.learning_agent_id = learning_agent_id
@@ -15,6 +15,7 @@ class MultiAgentCluster(object):
         self.playing_agents = self.all_agents[:self.learning_agent_id]+self.all_agents[self.learning_agent_id+1:]
         self.num_agents = len(self.all_agents)
         self.log_dir = log_dir
+        self.tf_summary = tf_summary
 
         self.store_interval = store_interval
         self.last_time_store = time.time()
@@ -139,6 +140,11 @@ class MultiAgentCluster(object):
                 self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD],
                 record_update_target
             ))
+            self.tf_summary.add_scalar(
+                '{}/{}'.format('global','record_improvement'),
+                (record_update_target-self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD]),
+                self.learning_agents[0].get_num_trained_frames(),
+            )
             self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD] = record_update_target
             self.learning_agents[0].episode_scaler_summary.reset()
 
