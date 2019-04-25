@@ -135,10 +135,11 @@ class MultiAgentCluster(object):
             '''update current'''
             current_checkpoint_by_index = np.where(self.checkpoints_reward_record==self.playing_agents[0].current_checkpoint_by_frame)[0][0]
             record_update_target = self.learning_agents[0].episode_scaler_summary.to_mean()['raw']
-            print('# INFO: checkpoints_reward_record of {} is being updated from {} to {}'.format(
+            print('# INFO: checkpoints_reward_record of {} is being updated from {} to {} (from {} episodes)'.format(
                 self.playing_agents[0].current_checkpoint_by_frame,
                 self.checkpoints_reward_record[current_checkpoint_by_index,self.checkpoints_reward_record_REWARD],
-                record_update_target
+                record_update_target,
+                len(self.learning_agents[0].episode_scaler_summary.final_rewards['raw']),
             ))
             self.tf_summary.add_scalar(
                 '{}/{}'.format('global','record_improvement'),
@@ -180,23 +181,24 @@ class MultiAgentCluster(object):
 
     def at_update(self,learning_agents_mode):
 
-        if ((time.time()-self.last_time_store)>self.store_interval):
-            self.last_time_store = time.time()
-            self.store()
+        '''for learning_agents'''
+        '''currently only support one learning_agent'''
+        assert len(self.learning_agents)==1
+        for agent in self.learning_agents:
+            agent.update()
+            agent.update_i += 1
+            if agent.update_i == agent.num_updates:
+                input('# ACTION REQUIRED: Train end.')
 
+        '''for playing_agents'''
         if ((time.time()-self.last_time_reload_playing_agents)>self.reload_playing_agents_interval):
             self.last_time_reload_playing_agents = time.time()
             self.reload_playing_agents()
 
-        '''currently only support one learning_agent'''
-        assert len(self.learning_agents)==1
-
-        for agent in self.learning_agents:
-            agent.update()
-
-            agent.update_i += 1
-            if agent.update_i == agent.num_updates:
-                input('# ACTION REQUIRED: Train end.')
+        '''for all'''
+        if ((time.time()-self.last_time_store)>self.store_interval):
+            self.last_time_store = time.time()
+            self.store()
 
     def restore_playing_agents(self, principle):
         for agent in self.playing_agents:
