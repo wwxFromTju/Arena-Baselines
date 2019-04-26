@@ -115,29 +115,8 @@ source activate Arena
 
 Run the code
 ```
-CUDA_VISIBLE_DEVICES=3 python main.py --mode train --env-name Fighter_2T1P-v2 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30169 --aux 17
+CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Crossroads_2T1P-v4 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30269 --aux 17
 ```
-
-### Procedures
-
-* ```--mode train```
-* ```--mode eval_population```
-* ```--mode eval_human```
-
-<!-- Shooter-v4-Random   | H4n  |  Done     |  Done    | None
-Boomer-v2           | H4n  |  Done     |  Done    | None
-Billiards-v1        | H4n  |  Done     |  None    | None
-Tennis-v1-Random    | W5n  |  Done     |  None    | None
-AirHockey-v1        | H4n  |  Done     |  Done    | None
-Tank_TP-v1          | W5n  |  Done     |  Running | None
-Fallflat-v2         | H4n  |  Done     |  Done    | None
-SoccerOne-v3-Random | H4n  |  Done     |  None    | None
-Snake-v3-Random     | W2n  |  Running  |  None    | None
-
-Soccer_2T1P-v1      | H4n  |  Running  |  None    | None
-BlowBlow_2T1P-v1    | H4n  |  Quit     |  None    | None
-Fighter_2T1P-v1     | W5n  |  Done     |  None    | None
-Tennis_2T1P-v1      | W2n  |  Done     |  None    | None -->
 
 ## Visualization
 

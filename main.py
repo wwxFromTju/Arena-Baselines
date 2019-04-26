@@ -119,30 +119,12 @@ def main():
     agents.restore()
     agents.store()
 
-    '''# DEBUG: eval against'''
-    if args.eval_against is not None:
-        agents.restore_playing_agents(principle=args.eval_against)
-        evaluate(
-            eval_envs=eval_envs,
-            agents=agents,
-            num_eval_episodes=args.num_eval_episodes,
-            summary_video=False,
-            vis_curves=True,
-            compute_win_loss_rate=False,
-            tf_summary=tf_summary,
-        )
-
     if args.mode in ['train']:
 
         print('# INFO: Train Starting')
 
         obs = envs.reset()
         agents.reset(obs)
-
-        '''prepare to start loop'''
-        if args.test_env:
-            test_env_id = int(time.time())
-            test_env_step = 0
 
         while True:
 
@@ -156,26 +138,10 @@ def main():
                     learning_agents_mode='learning',
                 )
 
-                if args.test_env:
-                    for agent in agents:
-                        action[0,agent.id,0]=int(input('# ACTION REQUIRED: Agent_{} act:'.format(agent.id)))
-
                 '''step'''
                 obs, reward, done, infos = envs.step(action)
                 agents.observe(obs, reward, done, infos,
                     learning_agents_mode='learning')
-
-                if args.test_env:
-                    info = '[ID {}][S {}][R {}][D {}]'.format(
-                        test_env_id,test_env_step,reward[0,:,0].item(),done[0,:])
-                    tf_summary.add_image(
-                        'test_env/ID-{}'.format(test_env_id),
-                        utils.flatten_agent_axis_to_img_axis(obs[0,:,-1,:,:]),
-                        test_env_step,
-                        dataformats='HW',
-                    )
-                    print('# INFO: {}'.format(info))
-                    test_env_step += 1
 
             agents.at_update(learning_agents_mode='learning')
 

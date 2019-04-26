@@ -91,18 +91,12 @@ def get_args():
                         help='[general][disables CUDA training]')
     parser.add_argument('--vis', action='store_true', default=False,
                         help='[general][enable visdom visualization]')
-    parser.add_argument('--num-eval-episodes', type=int, default=2,
+    parser.add_argument('--num-eval-episodes', type=int, default=10,
                         help='[general][how many episodes to run for one evaluation]')
     parser.add_argument('--arena-start-index', type=int, default=2394,
                         help='[general][each arena runs on a port, specify the ports to run the arena]')
     parser.add_argument('--aux', type=str, default='',
                         help='[general][some aux information you may want to record along with this run]')
-
-    '''debug'''
-    parser.add_argument('--test-env', action='store_true', default=False,
-                        help='[debug][enable visdom visualization]')
-    parser.add_argument('--eval-against', type=str, default=None,
-                        help='[debug][eval against an agent]')
 
     args = parser.parse_args()
     import os
@@ -121,9 +115,6 @@ def get_args():
     args.log_dir = os.path.join(args.log_dir, 'a-{}'.format(args.aux))
 
     '''default args'''
-    if (args.test_env) or (args.eval_against is not None):
-        '''eval settings'''
-        args.num_processes = 1
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     try:
         args.max_episode_steps = {
