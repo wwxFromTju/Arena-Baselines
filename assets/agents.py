@@ -83,6 +83,9 @@ class Agent(object):
 
         self.current_checkpoint_by_frame = 0
 
+        self.first_episode = True
+        self.obs_video = None
+
     def reset(self, obs):
         self.rollouts.obs[0].copy_(obs)
 
@@ -101,6 +104,9 @@ class Agent(object):
             self.trainer.clip_param = self.clip_param  * (1 - self.update_i / float(self.num_updates))
 
     def act(self, obs, mode):
+
+        self.test_obs_at_act(obs)
+
         if mode in ['playing']:
             with torch.no_grad():
                 _, action, _, self.eval_recurrent_hidden_states = self.brain.act(
@@ -138,9 +144,30 @@ class Agent(object):
         })
         if done[0]:
             self.episode_scaler_summary.at_done()
+            self.test_obs_at_done()
 
         if mode in ['learning']:
             self.step_i += 1
+
+    def test_obs_at_act(self,obs):
+        if self.first_episode:
+            # [thread, stack, H, W] --> (T, H, W)
+            obs_frame = obs[0,-1,:,:].unsqueeze(0)
+            if self.obs_video is None:
+                self.obs_video = obs_frame
+            else:
+                self.obs_video = torch.cat([self.obs_video,obs_frame],0)
+
+    def test_obs_at_done(self):
+        if self.first_episode:
+            self.first_episode = False
+            # (T, H, W) --> vid_tensor: :math:`(N, T, C, H, W)`.
+            self.obs_video=self.obs_video.unsqueeze(0).unsqueeze(2)
+            self.tf_summary.add_video(
+                'test_obs/agent_{}'.format(self.id),
+                self.obs_video,
+            )
+            print('# INFO: [Agent {}] test obs done'.format(self.id))
 
     def experience_not_enough(self):
         return (self.step_i < self.num_steps)
