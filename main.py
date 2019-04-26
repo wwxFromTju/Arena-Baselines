@@ -180,6 +180,7 @@ def main():
             agents.at_update(learning_agents_mode='learning')
 
     elif args.mode in ['test_obs']:
+        # eval_envs.unwrapped.set_train_mode(False)
         evaluate(
             eval_envs=eval_envs,
             agents=agents,

@@ -84,14 +84,14 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
     step_i = -1
 
-    while agents.learning_agent.episode_scaler_summary.get_length() < num_eval_episodes:
+    while agents.learning_agents[0].episode_scaler_summary.get_length() < num_eval_episodes:
 
         step_i += 1
 
         '''act'''
         action = agents.act(
             obs=obs,
-            learning_agent_mode='playing',
+            learning_agents_mode='playing',
         )
 
         if agent_1_is_human:
@@ -101,7 +101,7 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         '''step'''
         obs, reward, done, infos = eval_envs.step(action)
         agents.observe(obs, reward, done, infos,
-            learning_agent_mode='playing')
+            learning_agents_mode='playing')
 
         if agent_1_is_human:
             name = 'obs_a-{}'.format(1)
@@ -149,7 +149,7 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
     '''terminate and summary'''
 
     if vis_curves:
-        agents.learning_agent.vis_curves(mode='playing')
+        agents.learning_agents[0].vis_curves(mode='playing')
 
     if summary_video:
         # T,H,W --> vid_tensor: :math:`(N, T, C, H, W)`.
@@ -157,7 +157,7 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         tf_summary.add_video(
             'eval/obs',
             obs_video,
-            agents.learning_agent.get_num_trained_frames(),
+            agents.learning_agents[0].get_num_trained_frames(),
         )
 
     if compute_win_loss_rate:
@@ -173,11 +173,11 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         '''return win-loss rate'''
         win_loss_record = []
         for espisode_i in range(episode_total):
-            if agents.learning_agent.episode_scaler_summary.final_rewards['raw'][espisode_i]>agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
+            if agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]>agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [1.0]
-            elif agents.learning_agent.episode_scaler_summary.final_rewards['raw'][espisode_i]<agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
+            elif agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]<agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [0.0]
-            elif agents.learning_agent.episode_scaler_summary.final_rewards['raw'][espisode_i]==agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
+            elif agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]==agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [0.5]
             else:
                 raise NotImplemented
@@ -207,7 +207,7 @@ def load_win_loss_matrix(agents,args):
         print('-># INFO: possible_win_loss_matrix is {}'.format(possible_win_loss_matrix))
 
     '''prepare'''
-    num_possible_checkpoints = agents.learning_agent.get_possible_checkpoints().shape[0]
+    num_possible_checkpoints = agents.learning_agents[0].get_possible_checkpoints().shape[0]
     if args.population_eval_start is None:
         checkpoints_start_from = int(input('# ACTION REQUIRED: {} possible checkpoints, population eval start from: '.format(num_possible_checkpoints)))
     else:
