@@ -98,6 +98,8 @@ Kill Xorg and start vitual display
 sudo killall Xorg
 # or use sudo init 3
 sudo /usr/bin/X :0 &
+
+# if it says there is x server already running (but you cannot see anything from nvidia-smi), use htop to find the pid of Xorg, kill with 'kill -9 <PID>'
 ```
 
 Before run in a new window:
