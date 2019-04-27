@@ -16,8 +16,10 @@ def get_args():
                             [scaler2fig: convert scalers logged in tensorboardX to fig]')
 
     '''general and import settings'''
-    parser.add_argument('--env-name', default='PongNoFrameskip-v4',
-                        help='[general][environment to train on (default: PongNoFrameskip-v4)]')
+    parser.add_argument('--env-name',
+                        help='[general][environment to train on]')
+    parser.add_argument('--obs-type', default='visual',
+                        help='[general][observation type: visual, ram]')
     parser.add_argument('--num-env-steps', type=int, default=10e6,
                         help='[general][number of environment steps to train (default: 10e6)]')
     parser.add_argument('--log-dir', default='/tmp/gym/',
@@ -102,8 +104,18 @@ def get_args():
     import os
     args.log_dir = '../results'
 
+    if args.obs_type in ['visual']:
+        args.use_visual = True
+    elif args.obs_type in ['ram']:
+        args.use_visual = False
+    else:
+        input('# ERROR: obs_type is not supported')
+
     '''env'''
-    args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name))
+    if args.obs_type in ['visual']:
+        args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name))
+    elif args.obs_type in ['ram']:
+        args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name)+'-ram')
 
     '''trainer'''
     args.log_dir = os.path.join(args.log_dir, 'ti-{}'.format(args.trainer_id))

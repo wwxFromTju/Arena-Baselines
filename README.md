@@ -73,7 +73,7 @@ sudo nvidia-xconfig -a --use-display-device=None --virtual=1280x1024
 nvidia-xconfig --query-gpu-info
 
 # Add the BusID information to your /etc/X11/xorg.conf file
-sudo sed -i 's/    BoardName      "Tesla K80"/    BoardName      "Tesla K80"\n    BusID          "0:30:0"/g' /etc/X11/xorg.conf
+sudo sed -i 's/    BoardName      "GeForce GTX TITAN X"/    BoardName      "GeForce GTX TITAN X"\n    BusID          "0:30:0"/g' /etc/X11/xorg.conf
 
 # Remove the Section "Files" from the /etc/X11/xorg.conf file
 # And remove two lines that contain Section "Files" and EndSection
@@ -95,11 +95,10 @@ sudo reboot now
 
 Kill Xorg and start vitual display
 ```
-sudo killall Xorg
+ps aux | grep -ie Xorg | awk '{print "sudo kill -9 " $2}'
+# or use sudo killall Xorg
 # or use sudo init 3
 sudo /usr/bin/X :0 &
-
-# if it says there is x server already running (but you cannot see anything from nvidia-smi), use htop to find the pid of Xorg, kill with 'kill -9 <PID>'
 ```
 
 Before run in a new window:
@@ -117,7 +116,7 @@ source activate Arena
 
 Run the code
 ```
-CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Crossroads_2T1P-v4 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30269 --aux 17
+CUDA_VISIBLE_DEVICES=1 python main.py --mode train --env-name Crossroads_2T1P-v4 --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30969 --aux 17
 ```
 
 ## Visualization

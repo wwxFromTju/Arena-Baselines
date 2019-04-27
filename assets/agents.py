@@ -40,9 +40,13 @@ class Agent(object):
         self.vis_interval = vis_interval
 
         '''build policy'''
+        base_kwargs = {'recurrent': self.recurrent_brain}
+        if len(self.envs.observation_space.shape)==1:
+            # for ram obs, the hidden_size should be same as the obs size, but not smaller than 64
+            base_kwargs['hidden_size'] = max(int(self.envs.observation_space.shape[0]),64)
         from .brains import Policy
         self.brain = Policy(self.envs.observation_space.shape, self.envs.action_space,
-            base_kwargs={'recurrent': self.recurrent_brain}).to(self.device)
+            base_kwargs=base_kwargs).to(self.device)
 
         self.update_i = 0
         self.num_trained_frames_start = self.update_i * self.num_processes * self.num_steps
@@ -83,7 +87,13 @@ class Agent(object):
 
         self.current_checkpoint_by_frame = 0
 
-        self.first_episode = True
+        if len(self.envs.observation_space.shape)==1:
+            # ram obs does not supporte test_obs
+            self.test_obs = False
+        else:
+            # visual obs support test_obs, this will log the video of first episode since this run to tensorboard
+            self.test_obs = True
+
         self.obs_video = None
 
     def reset(self, obs):
@@ -150,7 +160,7 @@ class Agent(object):
             self.step_i += 1
 
     def test_obs_at_act(self,obs):
-        if self.first_episode:
+        if self.test_obs:
             # [thread, stack, H, W] --> (T, H, W)
             obs_frame = obs[0,-1,:,:].unsqueeze(0)
             if self.obs_video is None:
@@ -159,8 +169,8 @@ class Agent(object):
                 self.obs_video = torch.cat([self.obs_video,obs_frame],0)
 
     def test_obs_at_done(self):
-        if self.first_episode:
-            self.first_episode = False
+        if self.test_obs:
+            self.test_obs = False
             # (T, H, W) --> vid_tensor: :math:`(N, T, C, H, W)`.
             self.obs_video=self.obs_video.unsqueeze(0).unsqueeze(2)
             self.tf_summary.add_video(

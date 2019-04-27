@@ -222,16 +222,20 @@ class MLPBase(NNBase):
 
         self.actor = nn.Sequential(
             init_(nn.Linear(num_inputs, hidden_size)),
-            nn.Tanh(),
+            nn.LayerNorm(hidden_size),
+            nn.ReLU(),
             init_(nn.Linear(hidden_size, hidden_size)),
-            nn.Tanh()
+            nn.LayerNorm(hidden_size),
+            nn.ReLU()
         )
 
         self.critic = nn.Sequential(
             init_(nn.Linear(num_inputs, hidden_size)),
-            nn.Tanh(),
+            nn.LayerNorm(hidden_size),
+            nn.ReLU(),
             init_(nn.Linear(hidden_size, hidden_size)),
-            nn.Tanh()
+            nn.LayerNorm(hidden_size),
+            nn.ReLU()
         )
 
         self.critic_linear = init_(nn.Linear(hidden_size, 1))

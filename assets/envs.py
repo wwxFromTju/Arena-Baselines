@@ -82,14 +82,14 @@ def make_vec_envs(env_name, seed, num_processes, gamma, log_dir, add_timestep,
 
     return wrapper_envs_after_vec(envs,device,num_frame_stack,num_frame_stack)
 
-def wrapper_envs_after_vec(envs,device,num_frame_stack=None):
+def wrapper_envs_after_vec(envs,device,gamma,num_frame_stack=None):
 
     if len(envs.observation_space.shape) == 1:
-        input('# ACTION REQUIRED: Not supported.')
-        if gamma is None:
-            envs = VecNormalize(envs, ret=False)
-        else:
-            envs = VecNormalize(envs, gamma=gamma)
+        print('# WARNING: Currently, we do not support VecNormalize for multi-agent, use layer normalize in agent brain instead')
+        # if gamma is None:
+        #     envs = VecNormalize(envs, ret=False)
+        # else:
+        #     envs = VecNormalize(envs, gamma=gamma)
 
     envs = VecPyTorch(envs, device)
 
