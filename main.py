@@ -46,9 +46,10 @@ def main():
             env_name=args.env_name,
             max_episode_steps = args.max_episode_steps,
             num_env=args.num_processes,
-            use_visual=True,
+            use_visual=args.use_visual,
             start_index=args.arena_start_index,
             device = args.device,
+            gamma = args.gamma,
         )
 
     if (args.mode in ['eval_population','eval_human','eval_round','test_obs']):
@@ -56,9 +57,10 @@ def main():
             env_name=args.env_name,
             max_episode_steps = args.max_episode_steps,
             num_env=1,
-            use_visual=True,
+            use_visual=args.use_visual,
             start_index=args.arena_start_index+args.num_processes,
             device = args.device,
+            gamma = args.gamma,
         )
 
     '''build agent'''

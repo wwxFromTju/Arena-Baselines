@@ -24,7 +24,12 @@ def get_env_directory(env_name):
 class MultiAgentObservation(gym.ObservationWrapper):
     """For multiagent settings, convert between array and list"""
     def observation(self, observation):
-        return observation[0]
+        if len(observation)==1:
+            # visual obs (this is ugly from unity, not my bad)
+            return observation[0]
+        else:
+            # ram obs, [array(256), array(256), ...] -> array(num_agents, 156, )
+            return np.stack(observation)
 
 class MultiAgentReward(gym.RewardWrapper):
     """For multiagent settings, convert between array and list"""
@@ -154,7 +159,10 @@ def worker(remote, parent_remote, env_name, max_episode_steps, port, use_visual)
                 ob, reward, done, info = env.step(data)
                 if done.any():
                     ob = env.reset()
-                info['shift'] = env.env.env.shift
+                if use_visual:
+                    info['shift'] = env.env.env.shift
+                else:
+                    info['shift'] = env.env.shift
                 remote.send((ob, reward, done, info))
             elif cmd == 'reset':
                 ob = env.reset()
@@ -226,7 +234,7 @@ class SubprocVecEnvUnity(SubprocVecEnv):
         for remote in self.remotes:
             remote.send(('set_train_mode', train_mode))
 
-def make_arena(env_name, max_episode_steps, num_env, use_visual, start_index,device):
+def make_arena(env_name, max_episode_steps, num_env, use_visual, start_index, device, gamma):
 
     clear_ports(start_index,num_env,ask=True)
 
@@ -238,5 +246,5 @@ def make_arena(env_name, max_episode_steps, num_env, use_visual, start_index,dev
         use_visual=use_visual,
     )
     from .envs import wrapper_envs_after_vec
-    envs = wrapper_envs_after_vec(envs,device)
+    envs = wrapper_envs_after_vec(envs,device,gamma)
     return envs
