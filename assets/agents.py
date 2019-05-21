@@ -43,7 +43,8 @@ class Agent(object):
         base_kwargs = {'recurrent': self.recurrent_brain}
         if len(self.envs.observation_space.shape)==1:
             # for ram obs, the hidden_size should be same as the obs size, but not smaller than 64
-            base_kwargs['hidden_size'] = max(int(self.envs.observation_space.shape[0]),64)
+            # base_kwargs['hidden_size'] = max(int(self.envs.observation_space.shape[0]),64)
+            base_kwargs['hidden_size'] = 64
         from .brains import Policy
         self.brain = Policy(self.envs.observation_space.shape, self.envs.action_space,
             base_kwargs=base_kwargs).to(self.device)
