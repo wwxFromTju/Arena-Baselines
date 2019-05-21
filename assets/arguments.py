@@ -10,6 +10,7 @@ def get_args():
                         help='\
                             [test_obs: test if obs make sense (normally neeeded when you setup the virtual display)]\
                             [train: standard training]\
+                            [vis_train: visualize training, using one process and full render]\
                             [eval_population: evaluate population performance]\
                             [eval_human: evaluate against human player]\
                             [eval_round: evaluate agent against agent]\
@@ -103,6 +104,9 @@ def get_args():
     args = parser.parse_args()
     import os
     args.log_dir = '../results'
+
+    if args.mode in ['vis_train']:
+        args.num_processes = 1
 
     if args.obs_type in ['visual']:
         args.use_visual = True

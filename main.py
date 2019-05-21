@@ -41,7 +41,7 @@ def main():
     '''build env'''
     from assets.arena_python_interface import make_arena
 
-    if args.mode in ['train']:
+    if args.mode in ['train','vis_train']:
         envs = make_arena(
             env_name=args.env_name,
             max_episode_steps = args.max_episode_steps,
@@ -51,6 +51,8 @@ def main():
             device = args.device,
             gamma = args.gamma,
         )
+        if args.mode in ['vis_train']:
+            envs.unwrapped.set_train_mode(False)
 
     if (args.mode in ['eval_population','eval_human','eval_round','test_obs']):
         eval_envs = make_arena(
@@ -121,7 +123,7 @@ def main():
     agents.restore()
     agents.store()
 
-    if args.mode in ['train']:
+    if args.mode in ['train','vis_train']:
 
         print('# INFO: Train Starting')
 
