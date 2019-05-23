@@ -115,6 +115,13 @@ source activate Arena
 ```
 
 Run the code
+
+Continuous
+```
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove_1T1P-v0_7 --obs-type ram --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --gae-lambda 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 10000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+```
+
+Discrete
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove_1T1P-v0_7 --obs-type ram --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --use-linear-clip-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17_no_reward_clip
 ```

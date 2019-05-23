@@ -221,21 +221,19 @@ class MLPBase(NNBase):
             np.sqrt(2))
 
         self.actor = nn.Sequential(
+            nn.LayerNorm(num_inputs),
             init_(nn.Linear(num_inputs, hidden_size)),
-            nn.LayerNorm(hidden_size),
-            nn.ReLU(),
+            nn.Tanh(),
             init_(nn.Linear(hidden_size, hidden_size)),
-            nn.LayerNorm(hidden_size),
-            nn.ReLU()
+            nn.Tanh(),
         )
 
         self.critic = nn.Sequential(
+            nn.LayerNorm(num_inputs),
             init_(nn.Linear(num_inputs, hidden_size)),
-            nn.LayerNorm(hidden_size),
-            nn.ReLU(),
+            nn.Tanh(),
             init_(nn.Linear(hidden_size, hidden_size)),
-            nn.LayerNorm(hidden_size),
-            nn.ReLU()
+            nn.Tanh(),
         )
 
         self.critic_linear = init_(nn.Linear(hidden_size, 1))
