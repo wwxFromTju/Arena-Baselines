@@ -133,9 +133,10 @@ def worker(remote, parent_remote, env_name, max_episode_steps, port, use_visual)
 
     env = MultiAgentRoller(env)
 
-    # arena env runs in mutiple thread, the terminal condition may be trig for multiple times
-    # this is not dealt with in arena env, so deal with it here
-    env = ClipRewardEnv(env)
+    # # arena env runs in mutiple thread, the terminal condition may be trig for multiple times
+    # # this is not dealt with in arena env, so deal with it here
+    # env = ClipRewardEnv(env)
+    # This issue no longer exists with the new framework, remove this.
 
     if max_episode_steps>0:
         env = ExtraTimeLimit(env, max_episode_steps=max_episode_steps)
