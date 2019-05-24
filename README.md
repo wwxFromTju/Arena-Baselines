@@ -118,7 +118,7 @@ Run the code
 
 Continuous (missing vec_normalize, use LayerNorm in brain)
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove_1T1P-v0_7 --obs-type ram --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 10000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove_1T1P-v0_7 --obs-type ram --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
 ```
 
 Discrete
