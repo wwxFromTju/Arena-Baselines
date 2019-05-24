@@ -32,7 +32,6 @@ cd ..
 
 git clone https://github.com/Unity-Technologies/ml-agents.git
 cd ml-agents
-/* git checkout d3f9fd63043f1c82790d3fe35ee07dc5ed1232b9 */
 cd ml-agents
 pip install -e .
 cd ..
