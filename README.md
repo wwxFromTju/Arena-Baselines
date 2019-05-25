@@ -117,12 +117,12 @@ Run the code
 
 Continuous (missing vec_normalize, use LayerNorm in brain)
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove_1T1P-v0_8 --obs-type ram --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type ram --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
 ```
 
 Discrete
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads_2T1P-v5 --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads-2T1P-v1-Discrete --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
 ```
 
 ## Visualization
@@ -168,3 +168,6 @@ ps aux | grep -ie Linux.x86_64 | awk '{print "kill -9 " $2}'
 If you use Arena to conduct research, we ask that you cite the following paper as a reference:
 
 If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following paper as a reference:
+
+<!-- scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc /home/yuhangsong/Arena/results/en-Crossroads_2T1P-v5 /home/yuhangsong/Arena/results/
+scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc /home/yuhangsong/Arena/results/en-ArenaCrawlerMove_1T1P-v0_8-ram /home/yuhangsong/Arena/results/ -->
