@@ -122,7 +122,7 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove_1
 
 Discrete
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads_2T1P-v5 --obs-type vision --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads_2T1P-v5 --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
 ```
 
 ## Visualization
