@@ -110,6 +110,9 @@ class Agent(object):
 
     def act(self, obs, mode):
 
+        if not self.experience_not_enough():
+            self.step_i = 0
+
         self.test_obs_at_act(obs)
 
         if mode in ['playing']:
@@ -169,8 +172,6 @@ class Agent(object):
         return (self.step_i < self.num_steps)
 
     def update(self):
-
-        self.step_i = 0
 
         '''prepare for update'''
         with torch.no_grad():
