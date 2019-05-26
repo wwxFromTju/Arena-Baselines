@@ -119,7 +119,7 @@ source activate Arena
 
 ArenaCrawlerMove-2T1P-v1-Continuous visual
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30969 --aux 17_rb
+CUDA_VISIBLE_DEVICES=0 python main.py --mode vis_train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
 Crossroads-2T1P-v1-Discrete visual
@@ -179,9 +179,8 @@ as well as the engine behind Arena, without which the platform would be impossib
 
 ## Copy models
 
-ip: -P 33007 yuhangsong@ca56526248261483.natapp.cc
-run: en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/
-agent: 8945664
+run: en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
+agent: 43139072
 
-mkdir -p /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/
-scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/\{agent_8945664.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/
+mkdir -p /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
+scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/\{agent_43139072.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
