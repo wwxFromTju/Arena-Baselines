@@ -117,7 +117,7 @@ def get_args():
 
     '''env'''
     if args.obs_type in ['visual']:
-        args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name))
+        args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name)+'-visual')
     elif args.obs_type in ['ram']:
         args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name)+'-ram')
 
