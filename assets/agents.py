@@ -77,11 +77,6 @@ class Agent(object):
 
         self.episode_scaler_summary = EpisodeScalerSummary(['raw','len'])
 
-        '''for eval'''
-        self.eval_recurrent_hidden_states = torch.zeros(
-            1,self.brain.recurrent_hidden_state_size, device=self.device)
-        self.eval_masks = torch.zeros(1, 1, device=self.device)
-
         self.time_start = time.time()
         self.step_i = 0
 
@@ -118,34 +113,26 @@ class Agent(object):
         self.test_obs_at_act(obs)
 
         if mode in ['playing']:
-            with torch.no_grad():
-                _, action, _, self.eval_recurrent_hidden_states = self.brain.act(
-                    inputs = obs,
-                    rnn_hxs = self.eval_recurrent_hidden_states,
-                    masks = self.eval_masks,
-                    deterministic = True,
-                )
-            return action
+            deterministic = True
         elif mode in ['learning']:
-            with torch.no_grad():
-                obs, recurrent_hidden_states, masks = self.rollouts.get_policy_inputs(self.step_i)
-                self.value, self.action, self.action_log_prob, self.recurrent_hidden_states = self.brain.act(
-                    inputs = obs,
-                    rnn_hxs = recurrent_hidden_states,
-                    masks = masks,
-                    deterministic = False,
-                )
-            return self.action
+            deterministic = False
 
-    def observe(self, obs, reward, done, infos, mode):
+        with torch.no_grad():
+            obs, recurrent_hidden_states, masks = self.rollouts.get_policy_inputs(self.step_i)
+            self.value, self.action, self.action_log_prob, self.recurrent_hidden_states = self.brain.act(
+                inputs = obs,
+                rnn_hxs = recurrent_hidden_states,
+                masks = masks,
+                deterministic = deterministic,
+            )
+        return self.action
+
+    def observe(self, obs, reward, done, infos):
         masks = torch.FloatTensor([[0.0] if done_ else [1.0] for done_ in done])
 
-        if mode in ['playing']:
-            self.eval_masks = masks
-        elif mode in ['learning']:
-            '''store experiences'''
-            self.rollouts.insert(obs, self.recurrent_hidden_states, self.action,
-                self.action_log_prob, self.value, reward, masks)
+        '''store experiences'''
+        self.rollouts.insert(obs, self.recurrent_hidden_states, self.action,
+            self.action_log_prob, self.value, reward, masks)
 
         '''log'''
         self.episode_scaler_summary.at_step({
@@ -156,8 +143,7 @@ class Agent(object):
             self.episode_scaler_summary.at_done()
             self.test_obs_at_done()
 
-        if mode in ['learning']:
-            self.step_i += 1
+        self.step_i += 1
 
     def test_obs_at_act(self,obs):
         if self.test_obs:

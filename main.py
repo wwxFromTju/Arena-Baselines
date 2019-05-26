@@ -144,8 +144,7 @@ def main():
 
                 '''step'''
                 obs, reward, done, infos = envs.step(action)
-                agents.observe(obs, reward, done, infos,
-                    learning_agents_mode='learning')
+                agents.observe(obs, reward, done, infos)
 
             agents.at_update(learning_agents_mode='learning')
 

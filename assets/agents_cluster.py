@@ -57,11 +57,10 @@ class MultiAgentCluster(object):
             ).unsqueeze(1)]
         return torch.cat(action,1)
 
-    def observe(self, obs, reward, done, infos, learning_agents_mode):
+    def observe(self, obs, reward, done, infos):
         for agent in self.all_agents:
             agent.observe(
                 obs[:,agent.id], reward[:,agent.id], done[:,agent.id], infos,
-                mode = learning_agents_mode if agent.id==self.learning_agent_id else 'playing',
             )
 
     def store(self):
