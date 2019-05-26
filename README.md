@@ -117,7 +117,7 @@ Run the code
 
 ArenaCrawlerMove-2T1P-v1-Continuous ram/visual
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type ram --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 512 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
 Crossroads-2T1P-v1-Discrete visual
@@ -169,6 +169,5 @@ If you use Arena to conduct research, we ask that you cite the following paper a
 
 If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following paper as a reference:
 
-mv ../results/en-Crossroads_2T1P-v5 ../results/en-Crossroads-2T1P-v1-Discrete-visual
-scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads_2T1P-v5 /home/yuhangsong/Arena/results/
-scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove_1T1P-v0_8-ram/ti-ppo/sscp-prioritized/a-17/agent_14417920.pt /home/yuhangsong/Arena/results/en-ArenaCrawlerMove_1T1P-v0_8-ram/ti-ppo/sscp-prioritized/a-17/
+scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/agent_14909440.pt /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/
+scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/update_* /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/
