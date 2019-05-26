@@ -178,7 +178,11 @@ class MultiAgentCluster(object):
                 agent.restore(principle=self.reload_playing_agents_principle)
 
 
-    def at_update(self,learning_agents_mode):
+    def after_rollout(self):
+
+        '''for all agents'''
+        for agent in self.all_agents:
+            agent.after_rollout()
 
         '''for learning_agents'''
         '''currently only support one learning_agent'''

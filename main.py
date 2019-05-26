@@ -146,7 +146,7 @@ def main():
                 obs, reward, done, infos = envs.step(action)
                 agents.observe(obs, reward, done, infos)
 
-            agents.at_update(learning_agents_mode='learning')
+            agents.after_rollout()
 
     elif args.mode in ['test_obs']:
         # eval_envs.unwrapped.set_train_mode(False)

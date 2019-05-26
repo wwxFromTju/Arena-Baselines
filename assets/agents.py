@@ -110,9 +110,6 @@ class Agent(object):
 
     def act(self, obs, mode):
 
-        if not self.experience_not_enough():
-            self.step_i = 0
-
         self.test_obs_at_act(obs)
 
         if mode in ['playing']:
@@ -170,6 +167,10 @@ class Agent(object):
 
     def experience_not_enough(self):
         return (self.step_i < self.num_steps)
+
+    def after_rollout(self):
+        if not self.experience_not_enough():
+            self.step_i = 0
 
     def update(self):
 
