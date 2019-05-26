@@ -1,6 +1,8 @@
-<img src="./images/soccertwos.gif" align="middle" width="2000"/>
+<img src="./images/cover-baselines.png" align="middle" width="2000"/>
 
-# The Arena: An Evaluation Platform for General Self-play.
+## More resources
+
+More resources (paper, supplementary, documentation, code of baselines, code of building toolkit) can be found in [Arena Home](https://sites.google.com/view/arena-unity/)
 
 ## Requirements
 
@@ -30,6 +32,7 @@ cd baselines
 pip install -e .
 cd ..
 
+# ML-Agents
 git clone https://github.com/Unity-Technologies/ml-agents.git
 cd ml-agents
 cd ml-agents
@@ -56,6 +59,7 @@ If you run into following situations,
 
 * you are running on a remote server without GUI (X-Server).
 * your machine have a X-Server but it does not belongs (started by) your account, so you cannot access it.
+* if none of above is your situation, i.e., you are running things on your onw desktop, skip this section.
 
 follow [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), section ```Setting up X Server (optional)```, in order to setup a virtual display and virtual X-Server.
 Or, follow guidelines below (copied from above link).
@@ -113,11 +117,9 @@ tmux new-session -s Arena
 source activate Arena
 ```
 
-Run the code
-
-ArenaCrawlerMove-2T1P-v1-Continuous ram/visual
+ArenaCrawlerMove-2T1P-v1-Continuous visual
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30969 --aux 17_rb
+CUDA_VISIBLE_DEVICES=0 python main.py --mode vis_train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 30969 --aux 17_rb
 ```
 
 Crossroads-2T1P-v1-Discrete visual
@@ -135,29 +137,20 @@ and visit ```http://localhost:4253``` for visualization with tensorboard.
 
 If your port is blocked, use natapp to forward a port:
 ```
-./natapp --authtoken 710a6e3d5b6c23a5
+./natapp --authtoken ec2f6af6ebe7c405
 ```
 
-## More details about baselines provided
-
-Baseline self-play we provided:
-
-* ```--reload-playing-agents-principle recent``` The most naive baseline, play against recent your self.
-* ```--reload-playing-agents-principle uniform``` Play against your self in the history, uniformly sampled.
-
 ## Common Problems
-
-## Build Games
-
-* Source code of games are located in ```./ArenaEnvProjects/```, every game is a independent unity project (the project of games are now removed from this repo).
-* Make sure you go to Build Settings > Player Settings and switch "Display Resolution Dialog" to Disabled or Hidden By Default.
-* Build the game with right platform (Linux x86), put the binary file in ```./Bin/```. Name it ```<GameName-Platform>```, for example ```Tennis-Linux```.
 
 ## Kill Games
 
 ```
 ps aux | grep -ie Linux.x86_64 | awk '{print "kill -9 " $2}'
 ```
+
+## News
+
+* ram observation will be depreciated, since we found using visual+rnn results in much better in both data efficiency and wall-time. Besides, for ram observation, it is hard to orginize information from multiple players in one ram of a fixed size (fixed size is important for extensibility of number of agents, different social paradigms)
 
 ## License
 
@@ -166,8 +159,29 @@ ps aux | grep -ie Linux.x86_64 | awk '{print "kill -9 " $2}'
 ## Citation
 
 If you use Arena to conduct research, we ask that you cite the following paper as a reference:
+```
+@article{song2019arena,
+  title={Arena: A General Evaluation Platform and Building Toolkit for Multi-Agent Intelligence},
+  author={Song, Yuhang and Wang, Jianyi and Lukasiewicz, Thomas and Xu, Zhenghua and Xu, Mai and Ding, Zihan and Wu, Lianlong},
+  journal={arXiv preprint arXiv:1905.08085},
+  year={2019}
+}
+```
+as well as the engine behind Arena, without which the platform would be impossible to create
+```
+@article{juliani2018unity,
+  title={Unity: A general platform for intelligent agents},
+  author={Juliani, Arthur and Berges, Vincent-Pierre and Vckay, Esh and Gao, Yuan and Henry, Hunter and Mattar, Marwan and Lange, Danny},
+  journal={arXiv preprint arXiv:1809.02627},
+  year={2018}
+}
+```
 
-If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following paper as a reference:
+## Copy models
 
-scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/agent_14909440.pt /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/
-scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/update_* /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-ram/ti-ppo/sscp-prioritized/a-17/
+ip: -P 33007 yuhangsong@ca56526248261483.natapp.cc
+run: en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/
+agent: 8945664
+
+mkdir -p /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/
+scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/\{agent_8945664.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17/
