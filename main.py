@@ -15,11 +15,11 @@ import assets.utils as utils
 from assets.evaluate import evaluate
 
 args = utils.check_and_prepare_args(get_args())
-utils.check_and_prepare_torch(args.seed,args.cuda,args.cuda_deterministic)
+utils.check_and_prepare_torch(args.seed, args.cuda, args.cuda_deterministic)
 utils.check_log_dir(args.log_dir)
 
-def main():
 
+def main():
     '''prepare log'''
     if args.vis:
         from tensorboardX import SummaryWriter
@@ -41,28 +41,28 @@ def main():
     '''build env'''
     from assets.arena_python_interface import make_arena
 
-    if args.mode in ['train','vis_train']:
+    if args.mode in ['train', 'vis_train']:
         envs = make_arena(
             env_name=args.env_name,
-            max_episode_steps = args.max_episode_steps,
+            max_episode_steps=args.max_episode_steps,
             num_env=args.num_processes,
             use_visual=args.use_visual,
             start_index=args.arena_start_index,
-            device = args.device,
-            gamma = args.gamma,
+            device=args.device,
+            gamma=args.gamma,
         )
         if args.mode in ['vis_train']:
             envs.unwrapped.set_train_mode(False)
 
-    if (args.mode in ['eval_population','eval_human','eval_round','test_obs']):
+    if (args.mode in ['eval_population', 'eval_human', 'eval_round', 'test_obs']):
         eval_envs = make_arena(
             env_name=args.env_name,
-            max_episode_steps = args.max_episode_steps,
+            max_episode_steps=args.max_episode_steps,
             num_env=1,
             use_visual=args.use_visual,
-            start_index=args.arena_start_index+args.num_processes,
-            device = args.device,
-            gamma = args.gamma,
+            start_index=args.arena_start_index + args.num_processes,
+            device=args.device,
+            gamma=args.gamma,
         )
 
     '''build agent'''
@@ -75,55 +75,55 @@ def main():
     agents = []
     learning_agent_id = 0
     from assets.agents import Agent
-    for i in range(0,num_agents):
+    for i in range(0, num_agents):
         agents += [Agent(
-            id = i,
-            envs = envs_agent_refer,
-            recurrent_brain = args.recurrent_brain,
-            num_processes = args.num_processes,
-            num_steps = args.num_steps,
-            use_linear_lr_decay = args.use_linear_lr_decay,
-            use_linear_clip_decay = args.use_linear_clip_decay,
-            use_gae = args.use_gae,
-            gamma = args.gamma,
-            tau = args.tau,
-            num_env_steps = args.num_env_steps,
-            num_updates = args.num_updates,
-            log_dir = args.log_dir,
-            tf_summary = tf_summary,
-            device = args.device,
-            cuda = args.cuda,
+            id=i,
+            envs=envs_agent_refer,
+            recurrent_brain=args.recurrent_brain,
+            num_processes=args.num_processes,
+            num_steps=args.num_steps,
+            use_linear_lr_decay=args.use_linear_lr_decay,
+            use_linear_clip_decay=args.use_linear_clip_decay,
+            use_gae=args.use_gae,
+            gamma=args.gamma,
+            tau=args.tau,
+            num_env_steps=args.num_env_steps,
+            num_updates=args.num_updates,
+            log_dir=args.log_dir,
+            tf_summary=tf_summary,
+            device=args.device,
+            cuda=args.cuda,
 
-            trainer_id = args.trainer_id,
-            value_loss_coef = args.value_loss_coef,
-            entropy_coef = args.entropy_coef,
-            lr = args.lr,
-            eps = args.eps,
-            alpha = args.alpha,
-            max_grad_norm = args.max_grad_norm,
-            clip_param = args.clip_param,
-            ppo_epoch = args.ppo_epoch,
-            num_mini_batch = args.num_mini_batch,
+            trainer_id=args.trainer_id,
+            value_loss_coef=args.value_loss_coef,
+            entropy_coef=args.entropy_coef,
+            lr=args.lr,
+            eps=args.eps,
+            alpha=args.alpha,
+            max_grad_norm=args.max_grad_norm,
+            clip_param=args.clip_param,
+            ppo_epoch=args.ppo_epoch,
+            num_mini_batch=args.num_mini_batch,
 
-            log_interval = args.log_interval,
-            vis = args.vis,
-            vis_interval = args.vis_interval,
+            log_interval=args.log_interval,
+            vis=args.vis,
+            vis_interval=args.vis_interval,
         )]
 
     from assets.agents_cluster import MultiAgentCluster
     agents = MultiAgentCluster(
-        agents = agents,
-        learning_agent_id = learning_agent_id,
-        store_interval = args.store_interval,
-        log_dir = args.log_dir,
-        reload_playing_agents_interval = args.reload_playing_agents_interval,
-        reload_playing_agents_principle = args.reload_playing_agents_principle,
-        tf_summary = tf_summary,
+        agents=agents,
+        learning_agent_id=learning_agent_id,
+        store_interval=args.store_interval,
+        log_dir=args.log_dir,
+        reload_playing_agents_interval=args.reload_playing_agents_interval,
+        reload_playing_agents_principle=args.reload_playing_agents_principle,
+        tf_summary=tf_summary,
     )
     agents.restore()
     agents.store()
 
-    if args.mode in ['train','vis_train']:
+    if args.mode in ['train', 'vis_train']:
 
         if args.mode in ['train']:
             learning_agents_mode = 'learning'
@@ -167,15 +167,16 @@ def main():
             log_dir=args.log_dir,
         )
 
-    elif args.mode in ['eval_population','eval_human','eval_round']:
+    elif args.mode in ['eval_population', 'eval_human', 'eval_round']:
 
         from assets.evaluate import load_win_loss_matrix
         checkpoints_start_from, num_possible_checkpoints, skip_interval, \
-            num_evaled_rounds_total, win_loss_matrix, status = load_win_loss_matrix(agents,args)
+            num_evaled_rounds_total, win_loss_matrix, status = load_win_loss_matrix(
+                agents, args)
 
         if status in ['initilized']:
 
-            if args.mode in ['eval_human','eval_round']:
+            if args.mode in ['eval_human', 'eval_round']:
                 input('# WARNING: Mode requires a win_loss_matrix, but no win_loss_matrix is found on the disk. \
                     Thus, I will run eval_polulation first, this could take a while. Hit enter to continue.')
 
@@ -184,7 +185,7 @@ def main():
                 checkpoints_start_from=checkpoints_start_from,
                 num_possible_checkpoints=num_possible_checkpoints,
                 skip_interval=skip_interval,
-                num_evaled_rounds_total = num_evaled_rounds_total,
+                num_evaled_rounds_total=num_evaled_rounds_total,
                 win_loss_matrix=win_loss_matrix,
                 agents=agents,
                 eval_envs=eval_envs,
@@ -196,7 +197,7 @@ def main():
 
             print('# INFO: [eval_population][visualizing]')
             from assets.population_evaluate import vis_win_loss_matrix
-            vis_win_loss_matrix(win_loss_matrix,log_dir=args.log_dir)
+            vis_win_loss_matrix(win_loss_matrix, log_dir=args.log_dir)
 
         if args.mode in ['eval_human']:
 
