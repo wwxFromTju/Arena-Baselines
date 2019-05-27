@@ -125,6 +125,11 @@ def main():
 
     if args.mode in ['train','vis_train']:
 
+        if args.mode in ['train']:
+            learning_agents_mode = 'learning'
+        elif args.mode in ['vis_train']:
+            learning_agents_mode = 'playing'
+
         print('# INFO: Train Starting')
 
         obs = envs.reset()
@@ -139,7 +144,7 @@ def main():
 
                 action = agents.act(
                     obs=obs,
-                    learning_agents_mode='learning',
+                    learning_agents_mode=learning_agents_mode,
                 )
 
                 '''step'''

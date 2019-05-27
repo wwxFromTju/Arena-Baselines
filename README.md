@@ -167,6 +167,7 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads-2T1P-v1
 
 ## Visualization
 
+**Curves:**
 The code log multiple curves to help analysis the training process, run:
 ```
 source activate Arena && tensorboard --logdir ../results/ --port 8888
@@ -177,6 +178,13 @@ If your port is blocked, use natapp to forward a port:
 ```
 ./natapp --authtoken ec2f6af6ebe7c405
 ```
+
+**Behaviors:**
+Set ```--mode vis_train```, so that
+* The game engine runs at a real time scale of 1 (when training, it runs 100 times as the real time scale).
+* The game runs only one thread.
+* The game renders at 1920*1080, where you can observe agents' observations as well as the top-down view of the global state.
+* All agents act deterministically without exploring.
 
 ## Common Problems
 
