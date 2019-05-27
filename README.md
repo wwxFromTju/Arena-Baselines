@@ -150,19 +150,24 @@ tmux new-session -s Arena
 source activate Arena
 ```
 
-ArenaCrawlerMove-2T1P-v1-Continuous visual
+ArenaCrawlerMove-2T1P-v1-Continuous
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerMove-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
-ArenaCrawlerPush-2T1P-v1-Continuous visual
+ArenaCrawlerPush-2T1P-v1-Continuous
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerPush-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31269 --aux 17_rb
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name ArenaCrawlerPush-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
-Crossroads-2T1P-v1-Discrete visual
+Crossroads-2T1P-v1-Discrete
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads-2T1P-v1-Discrete --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+```
+
+Crossroads-2T1P-v1-Continuous
+```
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads-2T1P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
 ## Visualization
