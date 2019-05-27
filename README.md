@@ -1,8 +1,41 @@
 <img src="./images/cover-baselines.png" align="middle" width="2000"/>
 
-## More resources
+## Introduction
 
-More resources (paper, supplementary, documentation, code of baselines, code of building toolkit) can be found in [Arena Home](https://sites.google.com/view/arena-unity/)
+Learning agents that are not only capable of taking tests but are also innovating are becoming a hot topic in artificial intelligence (AI). One of the most promising paths towards this vision is multi-agent learning, where agents act as the environment for each other, and improving each agent means proposing new problems for others. However, the existing evaluation platforms are either not compatible with multi-agent settings, or limited to a specific game. That is, there is not yet a general evaluation platform for research on multi-agent intelligence. To this end, we introduce Arena, a general evaluation platform for multi-agent intelligence with 35 games of diverse logic and representations.
+More resources (paper, supplementary, documentation, code of building toolkit) can be found in [Arena Home](https://sites.google.com/view/arena-unity/).
+
+<img src="./images/crossroads.png" align="middle" width="2000"/>
+
+## Status: Beta
+
+We are currently open to any suggestions or pull requests from the community to make Arena a better platform.
+Some features mentioned in the paper may not yet available, since we are trying to make the codebase more consistent and just re-structured the project.
+
+## Updates
+
+* RAM observation will be depreciated, since we found using visual+rnn results in much better in both data efficiency and wall-time, even in continuous robot control games. Besides, for RAM observation, it is hard to orginize information from multiple players in one RAM of a fixed size (fixed size is important for extensibility of number of agents, different social paradigms, meta and transfer learning). However, visual observation can maintain a fixed observation shape and size.
+
+## Citation
+
+If you use Arena to conduct research, we ask that you cite the following paper as a reference:
+```
+@article{song2019arena,
+  title={Arena: A General Evaluation Platform and Building Toolkit for Multi-Agent Intelligence},
+  author={Song, Yuhang and Wang, Jianyi and Lukasiewicz, Thomas and Xu, Zhenghua and Xu, Mai and Ding, Zihan and Wu, Lianlong},
+  journal={arXiv preprint arXiv:1905.08085},
+  year={2019}
+}
+```
+as well as the engine behind Arena, without which the platform would be impossible to create
+```
+@article{juliani2018unity,
+  title={Unity: A general platform for intelligent agents},
+  author={Juliani, Arthur and Berges, Vincent-Pierre and Vckay, Esh and Gao, Yuan and Henry, Hunter and Mattar, Marwan and Lange, Danny},
+  journal={arXiv preprint arXiv:1809.02627},
+  year={2018}
+}
+```
 
 ## Requirements
 
@@ -147,42 +180,26 @@ If your port is blocked, use natapp to forward a port:
 
 ## Common Problems
 
-## Kill Games
+#### Game threads still running
 
+Sometimes, the game threads do not exit properly after you kill the python thread.
+Run following command to print a banch of kill commmands.
+Then run the printed commands to kill all the game threads.
 ```
 ps aux | grep -ie Linux.x86_64 | awk '{print "kill -9 " $2}'
 ```
 
-## News
+#### Port still in use
 
-* ram observation will be depreciated, since we found using visual+rnn results in much better in both data efficiency and wall-time. Besides, for ram observation, it is hard to orginize information from multiple players in one ram of a fixed size (fixed size is important for extensibility of number of agents, different social paradigms)
+It takes some time for the port to release after you killed the python thread.
+If you make make sure that your game threads have been killed, you are perfectly fine to run python with a different ```--arena-start-index 33969```.
+Or just wait for a while till the system release the port.
 
 ## License
 
 [Apache License 2.0](LICENSE)
 
-## Citation
-
-If you use Arena to conduct research, we ask that you cite the following paper as a reference:
-```
-@article{song2019arena,
-  title={Arena: A General Evaluation Platform and Building Toolkit for Multi-Agent Intelligence},
-  author={Song, Yuhang and Wang, Jianyi and Lukasiewicz, Thomas and Xu, Zhenghua and Xu, Mai and Ding, Zihan and Wu, Lianlong},
-  journal={arXiv preprint arXiv:1905.08085},
-  year={2019}
-}
-```
-as well as the engine behind Arena, without which the platform would be impossible to create
-```
-@article{juliani2018unity,
-  title={Unity: A general platform for intelligent agents},
-  author={Juliani, Arthur and Berges, Vincent-Pierre and Vckay, Esh and Gao, Yuan and Henry, Hunter and Mattar, Marwan and Lange, Danny},
-  journal={arXiv preprint arXiv:1809.02627},
-  year={2018}
-}
-```
-
-## Copy models
+## Copy models (For myself)
 
 run: en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
 agent: 43139072
