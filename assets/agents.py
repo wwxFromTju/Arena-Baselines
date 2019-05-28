@@ -76,8 +76,11 @@ class Agent(object):
         '''build rollouts'''
         from assets.storage import RolloutStorage
         self.rollouts = RolloutStorage(self.num_steps, self.num_processes,
-                                       self.envs.observation_space.shape, self.envs.action_space,
-                                       self.brain.recurrent_hidden_state_size).to(self.device)
+                                       self.envs.observation_space.shape,
+                                       self.envs.action_space,
+                                       self.brain.recurrent_hidden_state_size,
+                                       save_cuda_mem=True
+                                       ).to(self.device)
 
         self.episode_scaler_summary = EpisodeScalerSummary(['raw', 'len'])
 

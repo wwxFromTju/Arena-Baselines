@@ -30,8 +30,9 @@ class MultiAgentCluster(object):
         self.checkpoints_reward_record = None
         self.checkpoints_reward_record_FRAME = 0
         self.checkpoints_reward_record_REWARD = 1
-        if len(self.learning_agents) == 1 and len(self.playing_agents) == 1:
-            if self.reload_playing_agents_principle in ['prioritized']:
+
+        if self.reload_playing_agents_principle in ['prioritized']:
+            if len(self.learning_agents) == 1 and len(self.playing_agents) == 1:
                 self.checkpoints_reward_record = 'empty'
             else:
                 input('# WARNING: reload_playing_agents_principle of prioritized is only support for one playing_agent and one learning_agent')
