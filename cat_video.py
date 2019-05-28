@@ -3,28 +3,31 @@ import numpy as np
 
 dir = '../ArenaGameVideos'
 
-H = int(670*4)
-W = int(1430*4)
+H = int(670 * 4)
+W = int(1430 * 4)
 
 Y = 4
 X = 5
 
-XY = int(X*Y)
+XY = int(X * Y)
 
-h = int(H/Y)
-w = int(W/X)
+h = int(H / Y)
+w = int(W / X)
 
-finish = [False]*XY
+finish = [False] * XY
 
 caps = []
 
+
 def cap_video(video_i):
-    return cv2.VideoCapture('{}/{}.mov'.format(dir,video_i),0)
+    return cv2.VideoCapture('{}/{}.mov'.format(dir, video_i), 0)
+
 
 for video_i in range(XY):
     caps += [cap_video(video_i)]
 
-out = cv2.VideoWriter('{}/output.mp4'.format(dir), cv2.VideoWriter_fourcc(*'XVID'), caps[0].get(cv2.CAP_PROP_FPS), (W,H))
+out = cv2.VideoWriter('{}/output.mp4'.format(dir),
+                      cv2.VideoWriter_fourcc(*'XVID'), caps[0].get(cv2.CAP_PROP_FPS), (W, H))
 
 while True:
 
@@ -44,17 +47,18 @@ while True:
     for y in range(Y):
         cat_frame_row = None
         for x in range(X):
-            frames[video_i] = cv2.resize(frames[video_i],(w,h))
+            frames[video_i] = cv2.resize(frames[video_i], (w, h))
             if cat_frame_row is None:
                 cat_frame_row = frames[video_i]
             else:
-                cat_frame_row = np.concatenate((cat_frame_row,frames[video_i]),1)
+                cat_frame_row = np.concatenate(
+                    (cat_frame_row, frames[video_i]), 1)
 
             video_i += 1
         if cat_frame_col is None:
             cat_frame_col = cat_frame_row
         else:
-            cat_frame_col = np.concatenate((cat_frame_col,cat_frame_row),0)
+            cat_frame_col = np.concatenate((cat_frame_col, cat_frame_row), 0)
 
     print(cat_frame_col.shape)
     out.write(cat_frame_col)

@@ -71,10 +71,10 @@ def get_args():
                         help='[trainer][use a linear schedule on the ppo clipping parameter]')
 
     '''settings for self-play'''
-    parser.add_argument('--reload-playing-agents-interval', type=int, default=(60*0),
+    parser.add_argument('--reload-playing-agents-interval', type=int, default=(60 * 0),
                         help='[self-play][interval to switch component in seconds]')
     parser.add_argument('--reload-playing-agents-principle', type=str, default=50,
-                        help = '[self-play][principle of choosing a component]\
+                        help='[self-play][principle of choosing a component]\
                             [\
                                 recent(the most recent checkpoint),\
                                 uniform(uniformly sample from historical checkpoint),\
@@ -86,7 +86,7 @@ def get_args():
                         help="[general][sets flags for determinism when using CUDA (potentially slow!)]")
     parser.add_argument('--log-interval', type=int, default=10,
                         help='[general][log interval, one log per n updates (default: 10)]')
-    parser.add_argument('--store-interval', type=int, default=int(60*10),
+    parser.add_argument('--store-interval', type=int, default=int(60 * 10),
                         help='[general][save interval in seconds')
     parser.add_argument('--vis-interval', type=int, default=100,
                         help='[general][vis interval, one log per n updates (default: 100)]')
@@ -117,15 +117,18 @@ def get_args():
 
     '''env'''
     if args.obs_type in ['visual']:
-        args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name)+'-visual')
+        args.log_dir = os.path.join(
+            args.log_dir, 'en-{}'.format(args.env_name) + '-visual')
     elif args.obs_type in ['ram']:
-        args.log_dir = os.path.join(args.log_dir, 'en-{}'.format(args.env_name)+'-ram')
+        args.log_dir = os.path.join(
+            args.log_dir, 'en-{}'.format(args.env_name) + '-ram')
 
     '''trainer'''
     args.log_dir = os.path.join(args.log_dir, 'ti-{}'.format(args.trainer_id))
 
     '''self-play'''
-    args.log_dir = os.path.join(args.log_dir, 'sscp-{}'.format(args.reload_playing_agents_principle))
+    args.log_dir = os.path.join(
+        args.log_dir, 'sscp-{}'.format(args.reload_playing_agents_principle))
 
     '''general'''
     args.log_dir = os.path.join(args.log_dir, 'a-{}'.format(args.aux))
@@ -148,13 +151,13 @@ def get_args():
 
     try:
         args.skip_interval = {
-        'Boomer-v2': 8,
-        'Shooter-v4-Random': 4,
-        'Snake-v3-Random': 12,
-        'Billiards-v1': 12,
-        'AirHockey-v1': 8,
-        'Fallflat-v2': 8,
-        'Tank_TP-v1': 3,
+            'Boomer-v2': 8,
+            'Shooter-v4-Random': 4,
+            'Snake-v3-Random': 12,
+            'Billiards-v1': 12,
+            'AirHockey-v1': 8,
+            'Fallflat-v2': 8,
+            'Tank_TP-v1': 3,
         }[args.env_name]
     except Exception as e:
         args.skip_interval = None

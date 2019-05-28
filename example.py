@@ -17,10 +17,10 @@ while True:
             obs=obs,
             learning_agent_mode='learning',
         )
-        
+
         '''step'''
         obs, reward, done, infos = envs.step(action)
         agents.observe(obs, reward, done, infos,
-            learning_agent_mode='learning')
+                       learning_agent_mode='learning')
 
     agents.at_update(learning_agent_mode='learning')

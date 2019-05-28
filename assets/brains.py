@@ -127,12 +127,11 @@ class NNBase(nn.Module):
 
             # Let's figure out which steps in the sequence have a zero for any agent
             # We will always assume t=0 has a zero in it as that makes the logic cleaner
-            has_zeros = ((masks[1:] == 0.0) \
-                            .any(dim=-1)
-                            .nonzero()
-                            .squeeze()
-                            .cpu())
-
+            has_zeros = ((masks[1:] == 0.0)
+                         .any(dim=-1)
+                         .nonzero()
+                         .squeeze()
+                         .cpu())
 
             # +1 to correct the masks[1:]
             if has_zeros.dim() == 0:
@@ -143,7 +142,6 @@ class NNBase(nn.Module):
 
             # add t=0 and t=T to the list
             has_zeros = [0] + has_zeros + [T]
-
 
             hxs = hxs.unsqueeze(0)
             outputs = []
@@ -174,10 +172,10 @@ class CNNBase(NNBase):
     def __init__(self, num_inputs, recurrent=False, hidden_size=512):
         super(CNNBase, self).__init__(recurrent, hidden_size, hidden_size)
 
-        init_ = lambda m: init(m,
-            nn.init.orthogonal_,
-            lambda x: nn.init.constant_(x, 0),
-            nn.init.calculate_gain('relu'))
+        def init_(m): return init(m,
+                                  nn.init.orthogonal_,
+                                  lambda x: nn.init.constant_(x, 0),
+                                  nn.init.calculate_gain('relu'))
 
         self.main = nn.Sequential(
             init_(nn.Conv2d(num_inputs, 32, 8, stride=4)),
@@ -191,9 +189,9 @@ class CNNBase(NNBase):
             nn.ReLU()
         )
 
-        init_ = lambda m: init(m,
-            nn.init.orthogonal_,
-            lambda x: nn.init.constant_(x, 0))
+        def init_(m): return init(m,
+                                  nn.init.orthogonal_,
+                                  lambda x: nn.init.constant_(x, 0))
 
         self.critic_linear = init_(nn.Linear(hidden_size, 1))
 
@@ -215,10 +213,10 @@ class MLPBase(NNBase):
         if recurrent:
             num_inputs = hidden_size
 
-        init_ = lambda m: init(m,
-            nn.init.orthogonal_,
-            lambda x: nn.init.constant_(x, 0),
-            np.sqrt(2))
+        def init_(m): return init(m,
+                                  nn.init.orthogonal_,
+                                  lambda x: nn.init.constant_(x, 0),
+                                  np.sqrt(2))
 
         self.actor = nn.Sequential(
             nn.LayerNorm(num_inputs),

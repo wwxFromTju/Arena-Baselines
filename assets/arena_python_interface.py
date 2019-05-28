@@ -14,6 +14,7 @@ except ImportError:
     print('# INFO: No MPI')
     MPI = None
 
+
 def get_env_directory(env_name):
     import platform
     return './Bin/{}-{}'.format(
@@ -21,20 +22,25 @@ def get_env_directory(env_name):
         platform.system(),
     )
 
+
 class MultiAgentObservation(gym.ObservationWrapper):
     """For multiagent settings, convert between array and list"""
+
     def observation(self, observation):
-        if len(observation)==1:
+        if len(observation) == 1:
             # visual obs (this is ugly from unity, not my bad)
             return observation[0]
         else:
             # ram obs, [array(256), array(256), ...] -> array(num_agents, 156, )
             return np.stack(observation)
 
+
 class MultiAgentReward(gym.RewardWrapper):
     """For multiagent settings, convert between array and list"""
-    def reward(self,reward):
+
+    def reward(self, reward):
         return np.asarray(reward)
+
 
 class DoneWrapper(gym.Wrapper):
     def reset(self):
@@ -45,22 +51,29 @@ class DoneWrapper(gym.Wrapper):
         return observation, reward, self.done(done), info
 
     def done(self, done):
-        deprecated_warn_once("%s doesn't implement 'done' method. Maybe it implements deprecated '_done' method." % type(self))
+        deprecated_warn_once(
+            "%s doesn't implement 'done' method. Maybe it implements deprecated '_done' method." % type(self))
         return self._done(done)
+
 
 class MultiAgentDone(DoneWrapper):
     """For multiagent settings, convert between array and list"""
-    def done(self,done):
+
+    def done(self, done):
         return np.asarray(done)
+
 
 class MultiAgentAction(gym.ActionWrapper):
     """For multiagent settings, convert between array and list"""
-    def action(self,action):
+
+    def action(self, action):
         return list(action)
+
 
 class MultiAgentRoller(gym.Wrapper):
     """roll the agent at different position of the env,
     in case some of the env may not be completely symmetric"""
+
     def __init__(self, env=None):
         super(MultiAgentRoller, self).__init__(env)
         self.shift = 0
@@ -79,6 +92,7 @@ class MultiAgentRoller(gym.Wrapper):
         observation, reward, done, info = self.env.step(self.roll(action))
         return self.roll_back(observation), self.roll_back(reward), self.roll_back(done), info
 
+
 class ClipRewardEnv(gym.RewardWrapper):
     def __init__(self, env):
         gym.RewardWrapper.__init__(self, env)
@@ -86,6 +100,7 @@ class ClipRewardEnv(gym.RewardWrapper):
     def reward(self, reward):
         """Bin reward to {+1, 0, -1} by its sign."""
         return np.sign(reward)
+
 
 class MyUnityEnv(UnityEnv):
 
@@ -120,10 +135,10 @@ def worker(remote, parent_remote, env_name, max_episode_steps, port, use_visual)
 
     '''build env'''
     env = MyUnityEnv(
-        environment_filename = get_env_directory(env_name),
-        worker_id = port,
-        use_visual = use_visual,
-        multiagent = True,
+        environment_filename=get_env_directory(env_name),
+        worker_id=port,
+        use_visual=use_visual,
+        multiagent=True,
     )
 
     env = MultiAgentObservation(env)
@@ -138,7 +153,7 @@ def worker(remote, parent_remote, env_name, max_episode_steps, port, use_visual)
     # env = ClipRewardEnv(env)
     # This issue no longer exists with the new framework, remove this.
 
-    if max_episode_steps>0:
+    if max_episode_steps > 0:
         env = ExtraTimeLimit(env, max_episode_steps=max_episode_steps)
 
     '''If the input has shape (W,H,3), wrap for PyTorch convolutions'''
@@ -186,25 +201,29 @@ def worker(remote, parent_remote, env_name, max_episode_steps, port, use_visual)
     finally:
         close()
 
+
 class SubprocVecEnvUnity(SubprocVecEnv):
     """
     VecEnv that runs multiple environments in parallel in subproceses and communicates with them via pipes.
     Recommended to use when num_envs > 1 and step() can be a bottleneck.
     """
+
     def __init__(self, num_env, env_name, max_episode_steps, start_index, use_visual, spaces=None):
         """
         Arguments:
         """
         self.waiting = False
         self.closed = False
-        self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(num_env)])
+        self.remotes, self.work_remotes = zip(
+            *[Pipe() for _ in range(num_env)])
         self.ps = []
         rank = 0
         for (work_remote, remote) in zip(self.work_remotes, self.remotes):
             self.ps += [
                 Process(
                     target=worker,
-                    args=(work_remote, remote, env_name, max_episode_steps, (start_index+rank), use_visual)
+                    args=(work_remote, remote, env_name,
+                          max_episode_steps, (start_index + rank), use_visual)
                 )
             ]
             rank += 1
@@ -235,17 +254,18 @@ class SubprocVecEnvUnity(SubprocVecEnv):
         for remote in self.remotes:
             remote.send(('set_train_mode', train_mode))
 
+
 def make_arena(env_name, max_episode_steps, num_env, use_visual, start_index, device, gamma):
 
-    clear_ports(start_index,num_env,ask=True)
+    clear_ports(start_index, num_env, ask=True)
 
     envs = SubprocVecEnvUnity(
         num_env=num_env,
-        env_name = env_name,
-        max_episode_steps = max_episode_steps,
+        env_name=env_name,
+        max_episode_steps=max_episode_steps,
         start_index=start_index,
         use_visual=use_visual,
     )
     from .envs import wrapper_envs_after_vec
-    envs = wrapper_envs_after_vec(envs,device,gamma)
+    envs = wrapper_envs_after_vec(envs, device, gamma)
     return envs

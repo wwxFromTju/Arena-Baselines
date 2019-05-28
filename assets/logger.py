@@ -4,8 +4,10 @@ import os
 import numpy as np
 import cv2
 
+
 class EpisodeScalerSummary(object):
     """docstring for EpisodeScalerSummary."""
+
     def __init__(self, keys):
         self.keys = keys
         self.episode_reward = {}
@@ -13,7 +15,7 @@ class EpisodeScalerSummary(object):
         self.reset()
 
     def at_step(self, key_value):
-        if set(key_value.keys()) == set((dict((el,0) for el in self.keys)).keys()):
+        if set(key_value.keys()) == set((dict((el, 0) for el in self.keys)).keys()):
             for key in self.keys:
                 self.episode_reward[key] += key_value[key]
         else:
@@ -24,16 +26,18 @@ class EpisodeScalerSummary(object):
             try:
                 self.final_rewards[key] += [self.episode_reward[key]]
             except Exception as e:
-                self.final_rewards[key] =  [self.episode_reward[key]]
+                self.final_rewards[key] = [self.episode_reward[key]]
             self.episode_reward[key] = 0.0
 
     def to_print_str(self):
         print_str = ''
         for key in self.keys:
-            if len(self.final_rewards[key])>0:
-                print_str += '[{}-{:.2f}({})]'.format(
+            if len(self.final_rewards[key]) > 0:
+                print_str += '[{}-{:.2f}:{:.2f}:{:.2f}:{}(Min:Mean:Max:Num)]'.format(
                     key,
+                    np.min(self.final_rewards[key]),
                     np.mean(self.final_rewards[key]),
+                    np.max(self.final_rewards[key]),
                     len(self.final_rewards[key]),
                 )
             else:
@@ -50,6 +54,12 @@ class EpisodeScalerSummary(object):
         final_rewards_mean = {}
         for key in self.keys:
             final_rewards_mean[key] = np.mean(self.final_rewards[key])
+        return final_rewards_mean
+
+    def to_recent(self):
+        final_rewards_mean = {}
+        for key in self.keys:
+            final_rewards_mean[key] = self.final_rewards[key][-1]
         return final_rewards_mean
 
     def to_mean_and_reset(self):

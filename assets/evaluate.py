@@ -9,13 +9,17 @@ from pygame.locals import *
 from .utils import flatten_agent_axis_to_img_axis
 import matplotlib.pyplot as plt
 
-def display_obs(name,x):
-    cv2.imshow(name,cv2.resize(x, (720, 720)))
+
+def display_obs(name, x):
+    cv2.imshow(name, cv2.resize(x, (720, 720)))
     cv2.waitKey(100)
 
-def save_obs(log_dir,name,x):
-    cv2.imwrite(os.path.join(log_dir,name+'.jpg'),(x*255.0).astype(np.uint8))
+
+def save_obs(log_dir, name, x):
+    cv2.imwrite(os.path.join(log_dir, name + '.jpg'),
+                (x * 255.0).astype(np.uint8))
     input('save another?')
+
 
 def key2action(pressed, env_name):
     action = 0
@@ -50,9 +54,8 @@ def key2action(pressed, env_name):
     return action
 
 
-def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=False,compute_win_loss_rate=False,\
-    agent_1_is_human=False,tf_summary=None,is_display_obs=False,is_save_obs=False,log_dir=None,env_name=None):
-
+def evaluate(eval_envs, agents, num_eval_episodes, summary_video=False, vis_curves=False, compute_win_loss_rate=False,
+             agent_1_is_human=False, tf_summary=None, is_display_obs=False, is_save_obs=False, log_dir=None, env_name=None):
     '''reset'''
     obs = eval_envs.reset()
     for agent in agents.all_agents:
@@ -63,16 +66,16 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
     if agent_1_is_human:
         pygame.init()
-        screen = pygame.display.set_mode( (200,150) )
+        screen = pygame.display.set_mode((200, 150))
         pygame.display.set_caption('Control Window')
         background = pygame.image.load('./picforcontrol.jpg').convert()
-        background = pygame.transform.scale(background,(200,150))
-        screen.blit(background,(0,0))
+        background = pygame.transform.scale(background, (200, 150))
+        screen.blit(background, (0, 0))
         pygame.display.update()
         playground_left = pygame.image.load('./Left.jpg').convert()
-        playground_left = pygame.transform.scale(playground_left,(200,150))
+        playground_left = pygame.transform.scale(playground_left, (200, 150))
         playground_right = pygame.image.load('./Right.jpg').convert()
-        playground_right = pygame.transform.scale(playground_right,(200,150))
+        playground_right = pygame.transform.scale(playground_right, (200, 150))
 
         print("# ACTION REQUIRED: Press p to start")
         while True:
@@ -96,50 +99,51 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
         if agent_1_is_human:
             pygame.event.pump()
-            action[0,1,0] = key2action(pygame.key.get_pressed(), env_name)
+            action[0, 1, 0] = key2action(pygame.key.get_pressed(), env_name)
 
         '''step'''
         obs, reward, done, infos = eval_envs.step(action)
         agents.observe(obs, reward, done, infos,
-            learning_agents_mode='playing')
+                       learning_agents_mode='playing')
 
         if agent_1_is_human:
             name = 'obs_a-{}'.format(1)
             display_obs(
-                name = 'obs_a-{}'.format(1),
-                x = obs[0,1][-1].cpu().numpy(),
+                name='obs_a-{}'.format(1),
+                x=obs[0, 1][-1].cpu().numpy(),
             )
-            if infos[0]['shift']==0:
-                screen.blit(playground_right,(0,0))
+            if infos[0]['shift'] == 0:
+                screen.blit(playground_right, (0, 0))
                 pygame.display.update()
-            elif infos[0]['shift']==1:
-                screen.blit(playground_left,(0,0))
+            elif infos[0]['shift'] == 1:
+                screen.blit(playground_left, (0, 0))
                 pygame.display.update()
 
         if display_obs or save_obs:
             for agent_i in range(agents.num_agents):
-                x = obs[0,agent_i][-1].cpu().numpy()
+                x = obs[0, agent_i][-1].cpu().numpy()
                 name = 'obs_a-{}'.format(agent_i)
                 if is_display_obs:
                     display_obs(
-                        name = name,
-                        x = x,
+                        name=name,
+                        x=x,
                     )
                 elif is_save_obs:
                     name += '_f-{}'.format(step_i)
                     save_obs(
-                        log_dir = log_dir,
-                        name = name,
-                        x = x,
+                        log_dir=log_dir,
+                        name=name,
+                        x=x,
                     )
 
         '''summary_video'''
         if summary_video:
-            obs_frame = flatten_agent_axis_to_img_axis(obs[0,:,-1,:,:]).unsqueeze(0)
+            obs_frame = flatten_agent_axis_to_img_axis(
+                obs[0, :, -1, :, :]).unsqueeze(0)
             if obs_video is None:
                 obs_video = obs_frame
             else:
-                obs_video = torch.cat([obs_video,obs_frame],0)
+                obs_video = torch.cat([obs_video, obs_frame], 0)
 
         '''log at done'''
         if done.any():
@@ -153,7 +157,7 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
     if summary_video:
         # T,H,W --> vid_tensor: :math:`(N, T, C, H, W)`.
-        obs_video=obs_video.unsqueeze(0).unsqueeze(2)
+        obs_video = obs_video.unsqueeze(0).unsqueeze(2)
         tf_summary.add_video(
             'eval/obs',
             obs_video,
@@ -161,23 +165,24 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
         )
 
     if compute_win_loss_rate:
-        assert agents.num_agents==2
+        assert agents.num_agents == 2
         episode_totals = [
             len(agents.all_agents[0].episode_scaler_summary.final_rewards['raw']),
             len(agents.all_agents[1].episode_scaler_summary.final_rewards['raw'])
         ]
         episode_total = min(episode_totals)
-        num_mismatch = episode_totals[0]-episode_totals[1]
-        if abs(num_mismatch)>1:
-            print('# WARNING: : episode_totals missed matched too much {}'.format(num_mismatch))
+        num_mismatch = episode_totals[0] - episode_totals[1]
+        if abs(num_mismatch) > 1:
+            print('# WARNING: : episode_totals missed matched too much {}'.format(
+                num_mismatch))
         '''return win-loss rate'''
         win_loss_record = []
         for espisode_i in range(episode_total):
-            if agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]>agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
+            if agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i] > agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [1.0]
-            elif agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]<agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
+            elif agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i] < agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [0.0]
-            elif agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]==agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
+            elif agents.learning_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i] == agents.playing_agents[0].episode_scaler_summary.final_rewards['raw'][espisode_i]:
                 win_loss_record += [0.5]
             else:
                 raise NotImplemented
@@ -190,39 +195,47 @@ def evaluate(eval_envs,agents,num_eval_episodes,summary_video=False,vis_curves=F
 
         return win_loss_rate
 
+
 def get_possible_win_loss_matrixs(log_dir):
     '''get possible_win_loss_matrixs'''
-    import glob, os
+    import glob
+    import os
     possible_win_loss_matrixs = []
     for file in glob.glob(os.path.join(log_dir, 'win_loss_matrix_for_*_agents.npy')):
-        possible_win_loss_matrixs += [file.split(log_dir)[1].split('_agents.npy')[0].split('win_loss_matrix_for_')[1]]
+        possible_win_loss_matrixs += [file.split(log_dir)[1].split('_agents.npy')[
+            0].split('win_loss_matrix_for_')[1]]
     return possible_win_loss_matrixs
 
-def load_win_loss_matrix(agents,args):
+
+def load_win_loss_matrix(agents, args):
 
     possible_win_loss_matrixs = get_possible_win_loss_matrixs(args.log_dir)
 
-    print('# INFO: possible_win_loss_matrixs are (format: [checkpoints_start_from]_[num_possible_checkpoints]_[skip_interval]):')
+    print(
+        '# INFO: possible_win_loss_matrixs are (format: [checkpoints_start_from]_[num_possible_checkpoints]_[skip_interval]):')
     for possible_win_loss_matrix in possible_win_loss_matrixs:
         print('-># INFO: possible_win_loss_matrix is {}'.format(possible_win_loss_matrix))
 
     '''prepare'''
-    num_possible_checkpoints = agents.learning_agents[0].get_possible_checkpoints().shape[0]
+    num_possible_checkpoints = agents.learning_agents[0].get_possible_checkpoints(
+    ).shape[0]
     if args.population_eval_start is None:
-        checkpoints_start_from = int(input('# ACTION REQUIRED: {} possible checkpoints, population eval start from: '.format(num_possible_checkpoints)))
+        checkpoints_start_from = int(input(
+            '# ACTION REQUIRED: {} possible checkpoints, population eval start from: '.format(num_possible_checkpoints)))
     else:
         checkpoints_start_from = args.population_eval_start
         print('# INFO: {} possible checkpoints, population eval start from {} (default setting loaded)'.format(
-            num_possible_checkpoints,checkpoints_start_from))
+            num_possible_checkpoints, checkpoints_start_from))
     if args.skip_interval is None:
         skip_interval = int(input('# ACTION REQUIRED: skip_interval:'))
     else:
         skip_interval = args.skip_interval
         print('# INFO: skip_interval: {} (default setting loaded)'.format(skip_interval))
-    num_evaled_agents = (num_possible_checkpoints - checkpoints_start_from)//skip_interval+1
+    num_evaled_agents = (num_possible_checkpoints -
+                         checkpoints_start_from) // skip_interval + 1
     num_evaled_rounds_total = int(num_evaled_agents**2)
 
-    win_loss_matrix = np.zeros((num_evaled_agents,num_evaled_agents))
+    win_loss_matrix = np.zeros((num_evaled_agents, num_evaled_agents))
 
     try:
         '''load win_loss_matrix'''
@@ -248,6 +261,7 @@ def load_win_loss_matrix(agents,args):
         ))
         return checkpoints_start_from, num_possible_checkpoints, skip_interval, num_evaled_rounds_total, win_loss_matrix, 'initilized'
 
+
 def generate_win_loss_matrix(checkpoints_start_from, num_possible_checkpoints, skip_interval, num_evaled_rounds_total, win_loss_matrix, agents, eval_envs, tf_summary, args):
 
     print('# INFO: [generate win_loss_matrix][{}-{}-{}][start]'.format(
@@ -258,10 +272,10 @@ def generate_win_loss_matrix(checkpoints_start_from, num_possible_checkpoints, s
 
     eval_start_time = time.time()
     num_rounds_evaled = 0
-    for x in range(checkpoints_start_from,num_possible_checkpoints,skip_interval):
-        for y in range(checkpoints_start_from,num_possible_checkpoints,skip_interval):
+    for x in range(checkpoints_start_from, num_possible_checkpoints, skip_interval):
+        for y in range(checkpoints_start_from, num_possible_checkpoints, skip_interval):
             print('# INFO: [generate win_loss_matrix][x-{},y-{}][start]'.format(
-                x,y,
+                x, y,
             ))
             agents.all_agents[0].restore(principle='{}_th'.format(x))
             agents.all_agents[1].restore(principle='{}_th'.format(y))
@@ -276,11 +290,13 @@ def generate_win_loss_matrix(checkpoints_start_from, num_possible_checkpoints, s
             )
             num_rounds_evaled += 1
             print('# INFO: [generate win_loss_matrix][x-{},y-{}][done][win_loss_rate-{}][Remain {:.2f} hrs]'.format(
-                x,y,
+                x, y,
                 win_loss_rate,
-                (time.time()-eval_start_time)/num_rounds_evaled*(num_evaled_rounds_total-num_rounds_evaled)/60.0/60.0,
+                (time.time() - eval_start_time) / num_rounds_evaled *
+                (num_evaled_rounds_total - num_rounds_evaled) / 60.0 / 60.0,
             ))
-            win_loss_matrix[(x-checkpoints_start_from)//skip_interval,(y-checkpoints_start_from)//skip_interval] = win_loss_rate
+            win_loss_matrix[(x - checkpoints_start_from) // skip_interval,
+                            (y - checkpoints_start_from) // skip_interval] = win_loss_rate
 
     np.save(
         os.path.join(args.log_dir, "win_loss_matrix_for_{}_{}_{}_agents.npy".format(
@@ -299,17 +315,19 @@ def generate_win_loss_matrix(checkpoints_start_from, num_possible_checkpoints, s
 
     return win_loss_matrix
 
-def get_win_percentage(win_loss_matrix,sort):
+
+def get_win_percentage(win_loss_matrix, sort):
     win_percentage = np.concatenate(
         (
-            np.mean(win_loss_matrix,axis=1,keepdims=True),
-            np.expand_dims(np.array(range(win_loss_matrix.shape[0])),axis=1)
+            np.mean(win_loss_matrix, axis=1, keepdims=True),
+            np.expand_dims(np.array(range(win_loss_matrix.shape[0])), axis=1)
         ),
-        axis = 1,
+        axis=1,
     )
     if sort:
         win_percentage = win_percentage[np.argsort(win_percentage[:, 0])[::-1]]
     return win_percentage
+
 
 def eval_round(checkpoints_start_from, num_possible_checkpoints, skip_interval, win_loss_matrix, agents, eval_envs, tf_summary, args):
 
@@ -329,7 +347,8 @@ def eval_round(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
 
             matching_agent_checkpoint_ids += [checkpoint_id]
 
-            checkpoint_id = int(checkpoint_id*skip_interval+checkpoints_start_from)
+            checkpoint_id = int(
+                checkpoint_id * skip_interval + checkpoints_start_from)
 
             agents.all_agents[agent_i].restore(principle='{}_th'.format(
                 checkpoint_id
@@ -356,22 +375,26 @@ def eval_round(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
             matching_agent_checkpoint_ids,
             matching_agent_checkpoint_ids[0],
             win_loss_rate,
-            win_loss_matrix[matching_agent_checkpoint_ids[0],matching_agent_checkpoint_ids[1]],
+            win_loss_matrix[matching_agent_checkpoint_ids[0],
+                            matching_agent_checkpoint_ids[1]],
         ))
+
 
 def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, win_loss_matrix, agents, eval_envs, tf_summary, args):
 
     print('# INFO: [eval_human][starting]')
 
-    win_percentage = get_win_percentage(win_loss_matrix=win_loss_matrix,sort=True)
+    win_percentage = get_win_percentage(
+        win_loss_matrix=win_loss_matrix, sort=True)
 
     ranking_i = 0
     while True:
 
         try:
-            checkpoint_id = int(win_percentage[ranking_i,1]*skip_interval)
+            checkpoint_id = int(win_percentage[ranking_i, 1] * skip_interval)
         except Exception as e:
-            print('# INFO: You lost all agents! You rank at {} %.'.format((1.0-float(ranking_i)/float(win_percentage.shape[0]))))
+            print('# INFO: You lost all agents! You rank at {} %.'.format(
+                (1.0 - float(ranking_i) / float(win_percentage.shape[0]))))
             np.save(
                 os.path.join(args.log_dir, "human_ranking_for_{}_{}_{}_agents.npy".format(
                     checkpoints_start_from,
@@ -382,7 +405,7 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
             )
             input('# ACTION REQUIRED: [eval_human][Done]')
 
-        win_percentage_i = win_percentage[ranking_i,0]
+        win_percentage_i = win_percentage[ranking_i, 0]
         print('# INFO: [eval_human][testing agent ranking at {}, against checkpoint_id {}, win_percentage_i {}]'.format(
             ranking_i,
             checkpoint_id,
@@ -404,8 +427,9 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
             is_display_obs=False,
         )
 
-        if win_loss_rate<0.5:
-            print('# INFO: You win this agent with win_loss_rate of {}! You rank at {}.'.format((1.0-win_loss_rate),(1.0-float(ranking_i)/float(win_percentage.shape[0]))))
+        if win_loss_rate < 0.5:
+            print('# INFO: You win this agent with win_loss_rate of {}! You rank at {}.'.format(
+                (1.0 - win_loss_rate), (1.0 - float(ranking_i) / float(win_percentage.shape[0]))))
             np.save(
                 os.path.join(args.log_dir, "human_ranking_for_{}_{}_{}_agents.npy".format(
                     checkpoints_start_from,
@@ -416,6 +440,7 @@ def eval_human(checkpoints_start_from, num_possible_checkpoints, skip_interval, 
             )
             input('# ACTION REQUIRED: [eval_human][Done]')
         else:
-            print('# INFO: You lost this agent with win_loss_rate of {}'.format(win_loss_rate))
+            print('# INFO: You lost this agent with win_loss_rate of {}'.format(
+                win_loss_rate))
 
         ranking_i += 1

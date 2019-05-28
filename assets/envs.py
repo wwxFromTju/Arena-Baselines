@@ -28,6 +28,7 @@ try:
 except ImportError:
     pass
 
+
 def make_env(env_id, seed, rank, log_dir, add_timestep, allow_early_resets):
     def _thunk():
         if env_id.startswith("dm"):
@@ -58,8 +59,8 @@ def make_env(env_id, seed, rank, log_dir, add_timestep, allow_early_resets):
                 env = wrap_deepmind(env)
         elif len(env.observation_space.shape) == 3:
             raise NotImplementedError("CNN models work only for atari,\n"
-                "please use a custom wrapper for a custom pixel input env.\n"
-                "See wrap_deepmind for an example.")
+                                      "please use a custom wrapper for a custom pixel input env.\n"
+                                      "See wrap_deepmind for an example.")
 
         # If the input has shape (W,H,3), wrap for PyTorch convolutions
         obs_shape = env.observation_space.shape
@@ -69,6 +70,7 @@ def make_env(env_id, seed, rank, log_dir, add_timestep, allow_early_resets):
         return env
 
     return _thunk
+
 
 def make_vec_envs(env_name, seed, num_processes, gamma, log_dir, add_timestep,
                   device, allow_early_resets, num_frame_stack=None):
@@ -80,9 +82,10 @@ def make_vec_envs(env_name, seed, num_processes, gamma, log_dir, add_timestep,
     else:
         envs = DummyVecEnv(envs)
 
-    return wrapper_envs_after_vec(envs,device,num_frame_stack,num_frame_stack)
+    return wrapper_envs_after_vec(envs, device, num_frame_stack, num_frame_stack)
 
-def wrapper_envs_after_vec(envs,device,gamma,num_frame_stack=None):
+
+def wrapper_envs_after_vec(envs, device, gamma, num_frame_stack=None):
 
     if len(envs.observation_space.shape) == 1:
         print('# WARNING: Currently, we do not support VecNormalize for multi-agent, use layer normalize in agent brain instead')
@@ -135,6 +138,7 @@ class TransposeImage(gym.ObservationWrapper):
     def observation(self, observation):
         return observation.transpose(0, 3, 1, 2)
 
+
 class VecPyTorch(VecEnvWrapper):
     def __init__(self, venv, device):
         """Return only every `skip`-th frame"""
@@ -168,7 +172,8 @@ class VecNormalize(VecNormalize_):
         if self.ob_rms:
             if self.training:
                 self.ob_rms.update(obs)
-            obs = np.clip((obs - self.ob_rms.mean) / np.sqrt(self.ob_rms.var + self.epsilon), -self.clipob, self.clipob)
+            obs = np.clip((obs - self.ob_rms.mean) / np.sqrt(self.ob_rms.var +
+                                                             self.epsilon), -self.clipob, self.clipob)
             return obs
         else:
             return obs
@@ -195,7 +200,8 @@ class VecPyTorchFrameStack(VecEnvWrapper):
 
         if device is None:
             device = torch.device('cpu')
-        self.stacked_obs = torch.zeros((venv.num_envs,self.unwrapped.number_agents(),) + low.shape).to(device)
+        self.stacked_obs = torch.zeros(
+            (venv.num_envs, self.unwrapped.number_agents(),) + low.shape).to(device)
 
         observation_space = gym.spaces.Box(
             low=low, high=high, dtype=venv.observation_space.dtype)
@@ -203,12 +209,12 @@ class VecPyTorchFrameStack(VecEnvWrapper):
 
     def step_wait(self):
         obs, rews, news, infos = self.venv.step_wait()
-        self.stacked_obs[:,:, :-self.shape_dim0] = \
-            self.stacked_obs[:,:, self.shape_dim0:]
+        self.stacked_obs[:, :, :-self.shape_dim0] = \
+            self.stacked_obs[:, :, self.shape_dim0:]
         for (i, new) in enumerate(news):
             if new.any():
                 self.stacked_obs[i] = 0
-        self.stacked_obs[:,:, -self.shape_dim0:] = obs
+        self.stacked_obs[:, :, -self.shape_dim0:] = obs
         return self.stacked_obs, rews, news, infos
 
     def reset(self):
@@ -217,11 +223,12 @@ class VecPyTorchFrameStack(VecEnvWrapper):
             self.stacked_obs = torch.zeros(self.stacked_obs.shape)
         else:
             self.stacked_obs.zero_()
-        self.stacked_obs[:,:, -self.shape_dim0:] = obs
+        self.stacked_obs[:, :, -self.shape_dim0:] = obs
         return self.stacked_obs
 
     def close(self):
         self.venv.close()
+
 
 class ExtraTimeLimit(gym.Wrapper):
     def __init__(self, env, max_episode_steps):
