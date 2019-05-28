@@ -155,6 +155,7 @@ source activate Arena
 Games:
 * ArenaCrawlerMove-2T1P-v1-Continuous
 * ArenaCrawlerPush-2T1P-v1-Continuous
+* ArenaCrawlerPush-2T2P-v1-Continuous
 * Crossroads-2T1P-v1-Continuous
 * Crossroads-2T2P-v1-Continuous
 
