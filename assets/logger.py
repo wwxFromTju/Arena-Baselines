@@ -33,7 +33,7 @@ class EpisodeScalerSummary(object):
         print_str = ''
         for key in self.keys:
             if len(self.final_rewards[key]) > 0:
-                print_str += '[{}-{:.2f}:{:.2f}:{:.2f}:{}(Min:Mean:Max:Num)]'.format(
+                print_str += '[{} - {:.2f}|{:.2f}|{:.2f}|{} (Min|Mean|Max|Num)]'.format(
                     key,
                     np.min(self.final_rewards[key]),
                     np.mean(self.final_rewards[key]),
