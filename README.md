@@ -206,6 +206,16 @@ Set ```--mode vis_train```, so that
 * The game renders at 1920*1080, where you can observe agents' observations as well as the top-down view of the global state.
 * All agents act deterministically without exploring.
 
+## Baselines and options
+
+Above example commands runs a self-play with following options and features:
+
+* In different thread, the agent is taking different roles, so that the learning generalize better.
+* ```--reload-playing-agents-principle``` has three options
+  * ```recent``` players other than the learning agent are loaded with the most recent checkpoint.
+  * ```random``` players other than the learning agent are loaded with the a random checkpoint among all historical checkpoints.
+  * ```prioritized``` players other than the learning agent are loaded with the a random checkpoint sampled according to the winning rate (only valid for competitive two play games).
+
 ## Common Problems
 
 #### Game threads still running
@@ -223,14 +233,22 @@ It takes some time for the port to release after you killed the python thread.
 If you make make sure that your game threads have been killed, you are perfectly fine to run python with a different ```--arena-start-index 33969```.
 Or just wait for a while till the system release the port.
 
+#### Copy models
+
+You may find it is useful to copy models from a remote server to your desktop, so that you can see training visualization of the game.
+For example,
+
+* The experiment you want to copy is: ```/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17```
+* The most recent agent id is: ```43139072```
+* You are copying from a remote server: ```-P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc```
+
+You can run following commands to copy necessary checkpoints:
+
+```
+mkdir -p /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
+scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/\{agent_43139072.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
+```
+
 ## License
 
 [Apache License 2.0](LICENSE)
-
-## Copy models (For myself)
-
-run: en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
-agent: 43139072
-
-mkdir -p /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
-scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/\{agent_43139072.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
