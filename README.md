@@ -157,6 +157,7 @@ source activate Arena
 Games:
 * ArenaCrawlerMove-2T1P-v1-Continuous
 * ArenaCrawlerPush-2T1P-v1-Continuous
+* ArenaWalkerMove-2T1P-v1-Continuous
 * Crossroads-2T1P-v1-Continuous
 
 Commands, replace <GAME_NAME> with above games:
