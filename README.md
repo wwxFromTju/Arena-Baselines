@@ -217,6 +217,16 @@ Above example commands runs a self-play with following options and features:
   * ```random``` players other than the learning agent are loaded with the a random checkpoint among all historical checkpoints.
   * ```prioritized``` players other than the learning agent are loaded with the a random checkpoint sampled according to the winning rate (only valid for competitive two play games).
 
+## Benchmarks
+
+| ArenaCrawlerMove-2T1P-v1-Continuous |
+| ------------- |
+| <img src="./images/cover-baselines.png" align="middle" width="2000"/> |
+
+| ArenaCrawlerPush-2T1P-v1-Continuous |
+| ------------- |
+| <img src="./images/cover-baselines.png" align="middle" width="2000"/> |
+
 ## Common Problems
 
 #### Game threads still running
