@@ -52,8 +52,7 @@ class Agent(object):
                             base_kwargs=base_kwargs).to(self.device)
 
         self.update_i = 0
-        self.num_trained_frames_start = self.update_i * \
-            self.num_processes * self.num_steps
+        self.num_trained_frames_start = get_num_trained_frames()
 
         '''build trainer'''
         if self.trainer_id == 'a2c':
@@ -204,7 +203,7 @@ class Agent(object):
 
         '''log info by print'''
         if self.update_i % self.log_interval == 0:
-            self.log('learning')
+            print(self.to_print_str('learning'))
 
         '''vis curves'''
         if self.vis and self.update_i % self.vis_interval == 0:
@@ -214,10 +213,16 @@ class Agent(object):
         return self.update_i * self.num_processes * self.num_steps
 
     def to_print_str(self, mode):
-        print_str = "# INFO: [Agent {}][{}]".format(
+
+        print_str = ''
+
+        '''basic info'''
+        print_str += "# INFO: [Agent {}][{}]".format(
             self.id,
             mode,
         )
+
+        '''learning info'''
         if mode in ['learning']:
             end = time.time()
             FPS = ((self.get_num_trained_frames() + self.num_processes * self.num_steps) -
@@ -229,13 +234,10 @@ class Agent(object):
                 ((self.num_env_steps - self.get_num_trained_frames()) / FPS / 60.0 / 60.0),
             )
 
-        return print_str
-
-    def log(self, mode):
-        print_str = ''
-        print_str += self.to_print_str(mode)
+        '''episode_scaler_summary info'''
         print_str += self.episode_scaler_summary.to_print_str()
-        print(print_str)
+
+        return print_str
 
     def vis_curves(self, mode):
         if self.episode_scaler_summary.get_length() > 0:
@@ -308,6 +310,7 @@ class Agent(object):
         self.update_i = np.load(
             os.path.join(self.log_dir, "update_i.npy"),
         )[0]
+        self.num_trained_frames_start = get_num_trained_frames()
 
     def get_possible_checkpoints(self):
         '''get possible_checkpoints'''
