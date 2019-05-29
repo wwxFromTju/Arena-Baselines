@@ -114,7 +114,7 @@ class MultiAgentCluster(object):
         print('# INFO: Restoring MultiAgentCluster')
 
         '''restore learning_agents'''
-        for agent in self.learning_agents:
+        for agent in self.all_agents:
             agent.restore(principle='recent')
 
         if self.checkpoints_reward_record is not None:

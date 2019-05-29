@@ -10,3 +10,5 @@ imageio-ffmpeg
 pygame
 seaborn
 pandas
+pillow
+pyscreenshot

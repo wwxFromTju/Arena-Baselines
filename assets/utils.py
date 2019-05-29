@@ -5,6 +5,47 @@ import tensorflow as tf
 import os
 import numpy as np
 import cv2
+import pyscreenshot as ImageGrab
+
+
+class ScreenRecorder(object):
+    """docstring for ScreenRecorder."""
+
+    def __init__(self, log_dir):
+        super(ScreenRecorder, self).__init__()
+        self.log_dir = log_dir
+
+        self.vis_train_episode = 0
+        self.image_list = []
+
+    def at_step(self):
+        # TODO: The screen recorder cannot get the window or window demension or set window position,
+        # so you have to manually drag the window to the left up corner
+        self.image_list.append(ImageGrab.grab())
+
+    def at_done(self):
+        height, width, channel = np.array(self.image_list[-1]).shape
+        out = cv2.VideoWriter(
+            os.path.join(
+                self.log_dir,
+                "vis_train_{}.avi".format(
+                    self.vis_train_episode,
+                ),
+            ),
+            cv2.VideoWriter_fourcc(
+                *'DIVX'), 5, (width, height),
+        )
+        for images in self.image_list:
+            out.write(cv2.cvtColor(
+                np.array(images), cv2.COLOR_BGR2RGB))
+        out.release()
+        self.vis_train_episode += 1
+        self.image_list = []
+        if self.vis_train_episode == 1:
+            input('# ACTION REQUIRED: The window is normally not at the center at the first episode. So now drag the window to the center and press enter, we will take a screen record for your agent.')
+        else:
+            input('# ACTION REQUIRED: vis_train logged {} episodem, log another? (Press enter to log another)'.format(
+                self.vis_train_episode))
 
 
 def flatten_agent_axis_to_img_axis(x):

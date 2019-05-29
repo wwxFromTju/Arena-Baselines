@@ -53,6 +53,7 @@ def main():
         )
         if args.mode in ['vis_train']:
             envs.unwrapped.set_train_mode(False)
+            screen_recorder = utils.ScreenRecorder(args.log_dir)
 
     if (args.mode in ['eval_population', 'eval_human', 'eval_round', 'test_obs']):
         eval_envs = make_arena(
@@ -142,6 +143,9 @@ def main():
             '''interact'''
             while agents.experience_not_enough():
 
+                if args.mode in ['vis_train']:
+                    screen_recorder.at_step()
+
                 action = agents.act(
                     obs=obs,
                     learning_agents_mode=learning_agents_mode,
@@ -150,6 +154,10 @@ def main():
                 '''step'''
                 obs, reward, done, infos = envs.step(action)
                 agents.observe(obs, reward, done, infos)
+
+                if args.mode in ['vis_train']:
+                    if done[0, 0]:
+                        screen_recorder.at_done()
 
             agents.after_rollout()
 

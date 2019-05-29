@@ -52,7 +52,7 @@ class Agent(object):
                             base_kwargs=base_kwargs).to(self.device)
 
         self.update_i = 0
-        self.num_trained_frames_start = get_num_trained_frames()
+        self.num_trained_frames_start = self.get_num_trained_frames()
 
         '''build trainer'''
         if self.trainer_id == 'a2c':
@@ -310,7 +310,7 @@ class Agent(object):
         self.update_i = np.load(
             os.path.join(self.log_dir, "update_i.npy"),
         )[0]
-        self.num_trained_frames_start = get_num_trained_frames()
+        self.num_trained_frames_start = self.get_num_trained_frames()
 
     def get_possible_checkpoints(self):
         '''get possible_checkpoints'''
