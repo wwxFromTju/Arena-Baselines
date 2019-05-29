@@ -239,13 +239,15 @@ class Agent(object):
 
     def vis_curves(self, mode):
         if self.episode_scaler_summary.get_length() > 0:
-            tmp = self.episode_scaler_summary.to_recent()
-            for key in tmp.keys():
-                self.tf_summary.add_scalar(
-                    '{}/{}'.format(mode, key),
-                    tmp[key],
-                    self.get_num_trained_frames(),
-                )
+            for summary_mode in ['min', 'mean', 'max', 'recent']:
+                tmp = self.episode_scaler_summary.summary(mode=summary_mode)
+                self.episode_scaler_summary.reset()
+                for key in tmp.keys():
+                    self.tf_summary.add_scalar(
+                        '{}/{}_{}'.format(mode, key, summary_mode),
+                        tmp[key],
+                        self.get_num_trained_frames(),
+                    )
 
     def store(self):
         try:

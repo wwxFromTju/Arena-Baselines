@@ -15,6 +15,7 @@ class EpisodeScalerSummary(object):
         self.reset()
 
     def at_step(self, key_value):
+        '''call this at step'''
         if set(key_value.keys()) == set((dict((el, 0) for el in self.keys)).keys()):
             for key in self.keys:
                 self.episode_reward[key] += key_value[key]
@@ -22,6 +23,7 @@ class EpisodeScalerSummary(object):
             raise Exception('Must match!')
 
     def at_done(self):
+        '''call this at episode done'''
         for key in self.keys:
             try:
                 self.final_rewards[key] += [self.episode_reward[key]]
@@ -30,6 +32,7 @@ class EpisodeScalerSummary(object):
             self.episode_reward[key] = 0.0
 
     def to_print_str(self):
+        '''get a print string of final_rewards'''
         print_str = ''
         for key in self.keys:
             if len(self.final_rewards[key]) > 0:
@@ -48,26 +51,28 @@ class EpisodeScalerSummary(object):
         return print_str
 
     def get_length(self):
+        '''get the length of summaried final_rewards'''
         return len(self.final_rewards[list(self.final_rewards.keys())[0]])
 
-    def to_mean(self):
+    def summary(self, mode='mean'):
+        '''
+            get final_rewards summary
+            mode: min, mean, max, recent
+        '''
         final_rewards_mean = {}
         for key in self.keys:
-            final_rewards_mean[key] = np.mean(self.final_rewards[key])
-        return final_rewards_mean
-
-    def to_recent(self):
-        final_rewards_mean = {}
-        for key in self.keys:
-            final_rewards_mean[key] = self.final_rewards[key][-1]
-        return final_rewards_mean
-
-    def to_mean_and_reset(self):
-        final_rewards_mean = self.to_mean()
-        self.reset()
+            if mode in ['min']:
+                final_rewards_mean[key] = np.min(self.final_rewards[key])
+            elif mode in ['mean']:
+                final_rewards_mean[key] = np.mean(self.final_rewards[key])
+            elif mode in ['max']:
+                final_rewards_mean[key] = np.max(self.final_rewards[key])
+            elif mode in ['recent']:
+                final_rewards_mean[key] = self.final_rewards[key][-1]
         return final_rewards_mean
 
     def reset(self):
+        '''reset summary'''
         for key in self.keys:
             self.episode_reward[key] = 0.0
             self.final_rewards[key] = []
