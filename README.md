@@ -190,13 +190,13 @@ Set ```--mode vis_train```, so that
 
 | ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- | ------------- |
-| <img src="./images/push.gif" align="middle" width="2000"/>  | <img src="./images/push.gif" align="middle" width="2000"/>  |
+| <img src="./images/move.gif" align="middle" width="2000"/>  | <img src="./images/push.gif" align="middle" width="2000"/>  |
 
 * A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the image to see the high-resolution original file.
 
 | ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- | ------------- |
-| <img src="./images/push.png" align="middle" width="2000"/>  | <img src="./images/push.png" align="middle" width="2000"/>  |
+| <img src="./images/move.png" align="middle" width="2000"/>  | <img src="./images/push.png" align="middle" width="2000"/>  |
 
 ## Baselines and options
 
@@ -240,15 +240,18 @@ Or just wait for a while till the system release the port.
 You may find it is useful to copy models from a remote server to your desktop, so that you can see training visualization of the game.
 For example,
 
-* The experiment you want to copy is: ```/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17```
+* The experiment you want to copy is: ```/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17_rb```
 * The most recent agent id is: ```43139072```
 * You are copying from a remote server: ```-P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc```
 
 You can run following commands to copy necessary checkpoints:
 
 ```
-mkdir -p /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
-scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/\{agent_43139072.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
+mkdir -p /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17_rb/
+scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17_rb/\{agent_43139072.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17_rb/
+
+mkdir -p /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17_rb/
+scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17_rb/\{agent_24412160.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17_rb/
 ```
 
 ## Citation
