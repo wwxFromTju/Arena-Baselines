@@ -4,6 +4,7 @@
 
 Learning agents that are not only capable of taking tests but are also innovating are becoming a hot topic in artificial intelligence (AI). One of the most promising paths towards this vision is multi-agent learning, where agents act as the environment for each other, and improving each agent means proposing new problems for others. However, the existing evaluation platforms are either not compatible with multi-agent settings, or limited to a specific game. That is, there is not yet a general evaluation platform for research on multi-agent intelligence. To this end, we introduce Arena, a general evaluation platform for multi-agent intelligence with 35 games of diverse logic and representations.
 More resources (paper, supplementary, documentation, code of building toolkit) can be found in [Arena Home](https://sites.google.com/view/arena-unity/).
+If you use Arena to conduct research, we ask that you [cite the paper](#citation) as a reference.
 
 <img src="./images/crossroads.png" align="middle" width="2000"/>
 
@@ -16,33 +17,12 @@ Some features mentioned in the paper may not yet available, since we are trying 
 
 * RAM observation will be depreciated, since we found using visual+rnn results in much better in both data efficiency and wall-time, even in continuous robot control games. Besides, for RAM observation, it is hard to orginize information from multiple players in one RAM of a fixed size (fixed size is important for extensibility of number of agents, different social paradigms, meta and transfer learning). However, visual observation can maintain a fixed observation shape and size.
 
-## Citation
-
-If you use Arena to conduct research, we ask that you cite the following paper as a reference:
-```
-@article{song2019arena,
-  title={Arena: A General Evaluation Platform and Building Toolkit for Multi-Agent Intelligence},
-  author={Song, Yuhang and Wang, Jianyi and Lukasiewicz, Thomas and Xu, Zhenghua and Xu, Mai and Ding, Zihan and Wu, Lianlong},
-  journal={arXiv preprint arXiv:1905.08085},
-  year={2019}
-}
-```
-as well as the engine behind Arena, without which the platform would be impossible to create
-```
-@article{juliani2018unity,
-  title={Unity: A general platform for intelligent agents},
-  author={Juliani, Arthur and Berges, Vincent-Pierre and Vckay, Esh and Gao, Yuan and Henry, Hunter and Mattar, Marwan and Lange, Danny},
-  journal={arXiv preprint arXiv:1809.02627},
-  year={2018}
-}
-```
-
 ## Requirements
 
 In order to install requirements, follow:
 
 ```bash
-# For users behind the Great Wall
+# For users behind the Great Wall of China
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
 conda config --set show_channel_urls yes
@@ -206,6 +186,17 @@ Set ```--mode vis_train```, so that
 * The game runs only one thread.
 * The game renders at 1920*1080, where you can observe agents' observations as well as the top-down view of the global state.
 * All agents act deterministically without exploring.
+* Two video files (.avi and .gif) of the episode will be saved, so that you can post it on your project website.
+
+| ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
+| ------------- | ------------- |
+| <img src="./images/push.gif" align="middle" width="2000"/>  | <img src="./images/push.gif" align="middle" width="2000"/>  |
+
+* A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper.
+
+| ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
+| ------------- | ------------- |
+| <img src="./images/push.png" align="middle" width="2000"/>  | <img src="./images/push.png" align="middle" width="2000"/>  |
 
 ## Baselines and options
 
@@ -217,7 +208,7 @@ Above example commands runs a self-play with following options and features:
   * ```random``` players other than the learning agent are loaded with the a random checkpoint among all historical checkpoints.
   * ```prioritized``` players other than the learning agent are loaded with the a random checkpoint sampled according to the winning rate (only valid for competitive two play games).
 
-## Benchmarks
+<!-- ## Benchmarks
 
 | ArenaCrawlerMove-2T1P-v1-Continuous |
 | ------------- |
@@ -225,7 +216,7 @@ Above example commands runs a self-play with following options and features:
 
 | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- |
-| <img src="./images/cover-baselines.png" align="middle" width="2000"/> |
+| <img src="./images/cover-baselines.png" align="middle" width="2000"/> | -->
 
 ## Common Problems
 
@@ -260,6 +251,31 @@ mkdir -p /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti
 scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/\{agent_43139072.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-Crossroads-2T1P-v1-Discrete-visual/ti-ppo/sscp-prioritized/a-17/
 ```
 
+## Citation
+
+If you use Arena to conduct research, we ask that you cite the following paper as a reference:
+```
+@article{song2019arena,
+  title={Arena: A General Evaluation Platform and Building Toolkit for Multi-Agent Intelligence},
+  author={Song, Yuhang and Wang, Jianyi and Lukasiewicz, Thomas and Xu, Zhenghua and Xu, Mai and Ding, Zihan and Wu, Lianlong},
+  journal={arXiv preprint arXiv:1905.08085},
+  year={2019}
+}
+```
+as well as the engine behind Arena, without which the platform would be impossible to create
+```
+@article{juliani2018unity,
+  title={Unity: A general platform for intelligent agents},
+  author={Juliani, Arthur and Berges, Vincent-Pierre and Vckay, Esh and Gao, Yuan and Henry, Hunter and Mattar, Marwan and Lange, Danny},
+  journal={arXiv preprint arXiv:1809.02627},
+  year={2018}
+}
+```
+
 ## License
 
 [Apache License 2.0](LICENSE)
+
+## Acknowledgement
+
+We give special thanks to the [Whiteson Research Lab](http://whirl.cs.ox.ac.uk/) and [Unity ML-Agents Team](https://unity3d.com/machine-learning/), with which the discussion shaped the vision of the project a lot.
