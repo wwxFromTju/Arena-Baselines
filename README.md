@@ -140,9 +140,9 @@ Games:
 * ArenaWalkerMove-2T1P-v1-Continuous
 * Crossroads-2T1P-v1-Continuous
 
-Commands, replace <GAME_NAME> with above games:
+Commands, replace GAME_NAME with above games:
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name <GAME_NAME> --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
 #### Multiple (more than 2) Players Self-Play
@@ -151,9 +151,9 @@ Games:
 * Crossroads-2T2P-v1-Continuous
 * ArenaCrawlerPush-2T2P-v1-Continuous
 
-Commands, replace <GAME_NAME> with above games:
+Commands, replace GAME_NAME with above games:
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name <GAME_NAME> --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle recent --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle recent --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
 ### Discrete Action Space
@@ -161,9 +161,9 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name <GAME_NAME> --obs-
 Games:
 * Crossroads-2T1P-v1-Discrete
 
-Commands, replace <GAME_NAME> with above games:
+Commands, replace GAME_NAME with above games:
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name <GAME_NAME> --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
 ```
 
 ## Visualization
@@ -184,15 +184,15 @@ If your port is blocked, use natapp to forward a port:
 Set ```--mode vis_train```, so that
 * The game engine runs at a real time scale of 1 (when training, it runs 100 times as the real time scale).
 * The game runs only one thread.
-* The game renders at 1920*1080, where you can observe agents' observations as well as the top-down view of the global state.
+* The game renders at 1920*1080, where you can observe agents' observations as well as the top-down view of the global state. So you are expected to do this on a desktop with X-Server you can access, instead of [using a remote server](#setup-x-server).
 * All agents act deterministically without exploring.
-* Two video files (.avi and .gif) of the episode will be saved, so that you can post it on your project website.
+* Two video files (.avi and .gif) of the episode will be saved, so that you can post it on your project website. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the gif video to see the high-resolution original file.
 
 | ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- | ------------- |
 | <img src="./images/push.gif" align="middle" width="2000"/>  | <img src="./images/push.gif" align="middle" width="2000"/>  |
 
-* A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper.
+* A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the image to see the high-resolution original file.
 
 | ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- | ------------- |
