@@ -190,13 +190,13 @@ Set ```--mode vis_train```, so that
 
 | ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- | ------------- |
-| <img src="./images/move.gif" align="middle" width="2000"/>  | <img src="./images/push.gif" align="middle" width="2000"/>  |
+| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/>  |
 
 * A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the image to see the high-resolution original file.
 
 | ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
 | ------------- | ------------- |
-| <img src="./images/move.png" align="middle" width="2000"/>  | <img src="./images/push.png" align="middle" width="2000"/>  |
+| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.png" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.png" align="middle" width="2000"/>  |
 
 ## Baselines and options
 
@@ -207,16 +207,6 @@ Above example commands runs a self-play with following options and features:
   * ```recent``` players other than the learning agent are loaded with the most recent checkpoint.
   * ```random``` players other than the learning agent are loaded with the a random checkpoint among all historical checkpoints.
   * ```prioritized``` players other than the learning agent are loaded with the a random checkpoint sampled according to the winning rate (only valid for competitive two play games).
-
-<!-- ## Benchmarks
-
-| ArenaCrawlerMove-2T1P-v1-Continuous |
-| ------------- |
-| <img src="./images/cover-baselines.png" align="middle" width="2000"/> |
-
-| ArenaCrawlerPush-2T1P-v1-Continuous |
-| ------------- |
-| <img src="./images/cover-baselines.png" align="middle" width="2000"/> | -->
 
 ## Common Problems
 
@@ -253,6 +243,37 @@ scp -r -P 30007 yuhangsong@fbafc1ae575e5123.natapp.cc:/home/yuhangsong/Arena/res
 mkdir -p /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17_rb/
 scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17_rb/\{agent_24412160.pt,eval,checkpoints_reward_record.npy,update_i.npy,event*\} /home/yuhangsong/Arena/results/en-ArenaCrawlerMove-2T1P-v1-Continuous-visual/ti-ppo/sscp-prioritized/a-17_rb/
 ```
+
+## Benchmarks
+
+| ArenaCrawlerMove-2T1P-v1-Continuous |
+| ------------- |
+| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
+
+| ArenaCrawlerPush-2T1P-v1-Continuous |
+| ------------- |
+| <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
+
+| ArenaWalkerMove-2T1P-v1-Continuous |
+| ------------- |
+| <img src="./images/ArenaWalkerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
+| Server: Wx1 ready |
+
+| Crossroads-2T1P-v1-Continuous |
+| ------------- |
+| <img src="./images/Crossroads-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
+| Server: Wx1 ready |
+
+| ArenaCrawlerPush-2T2P-v1-Continuous |
+| ------------- |
+| <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.gif" align="middle" width="2000"/> |
+| Server: H4n running |
+
+| Crossroads-2T2P-v1-Continuous |
+| ------------- |
+| <img src="./images/Crossroads-2T2P-v1-Continuous.gif" align="middle" width="2000"/> |
+| Server: Wx1 running |
+
 
 ## Citation
 
