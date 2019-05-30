@@ -6,6 +6,8 @@ import os
 import numpy as np
 import cv2
 import pyscreenshot as ImageGrab
+import imageio
+import scipy.misc
 
 
 class ScreenRecorder(object):
@@ -14,7 +16,6 @@ class ScreenRecorder(object):
     def __init__(self, log_dir):
         super(ScreenRecorder, self).__init__()
         self.log_dir = log_dir
-
         self.vis_train_episode = 0
         self.image_list = []
 
@@ -24,6 +25,7 @@ class ScreenRecorder(object):
         self.image_list.append(ImageGrab.grab())
 
     def at_done(self):
+        '''write video'''
         height, width, channel = np.array(self.image_list[-1]).shape
         out = cv2.VideoWriter(
             os.path.join(
@@ -32,20 +34,60 @@ class ScreenRecorder(object):
                     self.vis_train_episode,
                 ),
             ),
-            cv2.VideoWriter_fourcc(
-                *'DIVX'), 5, (width, height),
+            cv2.VideoWriter_fourcc(*'DIVX'),
+            5,
+            (width, height),
         )
         for images in self.image_list:
-            out.write(cv2.cvtColor(
-                np.array(images), cv2.COLOR_BGR2RGB))
+            out.write(
+                cv2.cvtColor(
+                    np.array(images),
+                    cv2.COLOR_BGR2RGB,
+                ),
+            )
         out.release()
+
+        '''write gif'''
+        with imageio.get_writer(
+            os.path.join(
+                self.log_dir,
+                "vis_train_{}.gif".format(
+                    self.vis_train_episode,
+                ),
+            ),
+            mode='I',
+        ) as writer:
+            for images in self.image_list:
+                writer.append_data(
+                    np.array(images),
+                )
+
+        '''write png'''
+        png = np.zeros(np.array(images).shape).astype(float)
+        for images in self.image_list:
+            png += np.array(images).astype(float)
+        png /= float(len(self.image_list))
+        scipy.misc.imsave(
+            os.path.join(
+                self.log_dir,
+                "vis_train_{}.png".format(
+                    self.vis_train_episode,
+                ),
+            ),
+            png,
+        )
+
         self.vis_train_episode += 1
         self.image_list = []
+
         if self.vis_train_episode == 1:
             input('# ACTION REQUIRED: The window is normally not at the center at the first episode. So now drag the window to the center and press enter, we will take a screen record for your agent.')
+
         else:
-            input('# ACTION REQUIRED: vis_train logged {} episodem, log another? (Press enter to log another)'.format(
-                self.vis_train_episode))
+            input('# ACTION REQUIRED: vis_train logged {} episodes (recent tag {}), log another? (Press enter to log another)'.format(
+                self.vis_train_episode,
+                self.vis_train_episode - 1,
+            ))
 
 
 def flatten_agent_axis_to_img_axis(x):
