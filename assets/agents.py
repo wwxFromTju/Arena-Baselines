@@ -105,6 +105,8 @@ class Agent(object):
 
     def randomlize_population_id(self):
         self.population_id = np.random.randint(self.population_number)
+        print('# INFO: [Agent {} Population {}][Regenerate population_id: {}]'.format(
+            self.id, self.population_id, self.population_id))
 
     def reset(self, obs):
         self.rollouts.obs[0].copy_(obs)
@@ -183,7 +185,8 @@ class Agent(object):
                 'test_obs/agent_{}'.format(self.id),
                 self.obs_video,
             )
-            print('# INFO: [Agent {}] test obs done'.format(self.id))
+            print('# INFO: [Agent {} Population {}] test obs done'.format(
+                self.id, self.population_id, self.population_id))
 
     def experience_not_enough(self):
         return (self.step_i < self.num_steps)
@@ -226,8 +229,9 @@ class Agent(object):
         print_str = ''
 
         '''basic info'''
-        print_str += "# INFO: [Agent {}][{}]".format(
+        print_str += "# INFO: [Agent {} Population {}][{}]".format(
             self.id,
+            self.population_id,
             mode,
         )
 
@@ -267,11 +271,12 @@ class Agent(object):
             checkpoint = self.get_num_trained_frames()
             self.store_to_checkpoint(checkpoint)
             self.current_checkpoint_by_frame = checkpoint
-            print('# INFO: [Agent {}][Store to checkpoint {} ok]'.format(
-                self.id, checkpoint))
+            print('# INFO: [Agent {} Population {}][Store to checkpoint {} ok]'.format(
+                self.id, self.population_id, checkpoint))
 
         except Exception as e:
-            print('# WARNING: [Agent {}][Store failed: {}]'.format(self.id, e))
+            print('# WARNING: [Agent {} Population {}][Store failed: {}]'.format(
+                self.id, self.population_id, e))
 
     def restore(self, principle='recent'):
         '''
@@ -286,15 +291,13 @@ class Agent(object):
             checkpoint = self.get_checkpoint(possible_checkpoints, principle)
             self.restore_from_checkpoint(checkpoint)
             self.current_checkpoint_by_frame = checkpoint
-            print('# INFO: [Agent {}][Restore checkpoint {} ok from {} possible checkpoints, following principle of {}]'.format(
-                self.id, checkpoint, len(possible_checkpoints), principle))
+            print('# INFO: [Agent {} Population {}][Restore checkpoint {} ok from {} possible checkpoints, following principle of {}]'.format(
+                self.id, self.population_id, checkpoint, len(possible_checkpoints), principle))
 
         except Exception as e:
             print(
-                '# WARNING: [Agent {}][Restore failed: {}][reinitialize agent and store]'.format(self.id, e))
+                '# WARNING: [Agent {} Population {}][Restore failed: {}][reinitialize agent and store]'.format(self.id, self.population_id, e))
             torch.manual_seed(self.population_id)
-            torch.manual_seed_all(self.population_id)
-            torch.cuda.manual_seed(self.population_id)
             torch.cuda.manual_seed_all(self.population_id)
             self.brain = self.build_brain()
             self.store()
