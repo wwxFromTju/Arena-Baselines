@@ -2,6 +2,11 @@
 
 ## Introduction
 
+
+| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.gif" align="middle" width="2000"/>  |
+| ------------- | ------------- | ------------- |
+| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.png" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.png" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.png" align="middle" width="2000"/>  |
+
 Learning agents that are not only capable of taking tests but are also innovating are becoming a hot topic in artificial intelligence (AI). One of the most promising paths towards this vision is multi-agent learning, where agents act as the environment for each other, and improving each agent means proposing new problems for others. However, the existing evaluation platforms are either not compatible with multi-agent settings, or limited to a specific game. That is, there is not yet a general evaluation platform for research on multi-agent intelligence. To this end, we introduce Arena, a general evaluation platform for multi-agent intelligence with 35 games of diverse logic and representations.
 More resources (paper, supplementary, documentation, code of building toolkit) can be found in [Arena Home](https://sites.google.com/view/arena-unity/).
 If you use Arena to conduct research, we ask that you [cite the paper](#citation) as a reference.
@@ -168,7 +173,9 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-ty
 
 ### More Baselines
 
-Population-based training, add argument ```--population-number 32```:
+Population-based training is usefull when the game is none-transitive, which means there is no best agent, but there could be a best population.
+Population-based training will train a batch of agents instead of just one.
+Add argument ```--population-number 32``` to enable population base training:
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name Crossroads-2T2P-v1-Continuous --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --population-number 32 --reload-playing-agents-principle recent --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
@@ -194,17 +201,8 @@ Set ```--mode vis_train```, so that
 * The game runs only one thread.
 * The game renders at 1920*1080, where you can observe agents' observations as well as the top-down view of the global state. So you are expected to do this on a desktop with X-Server you can access, instead of [using a remote server](#setup-x-server).
 * All agents act deterministically without exploring.
-* Two video files (.avi and .gif) of the episode will be saved, so that you can post it on your project website. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the gif video to see the high-resolution original file.
-
-| ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
-| ------------- | ------------- |
-| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/>  |
-
-* A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the image to see the high-resolution original file.
-
-| ArenaCrawlerMove-2T1P-v1-Continuous  | ArenaCrawlerPush-2T1P-v1-Continuous |
-| ------------- | ------------- |
-| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.png" align="middle" width="2000"/>  | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.png" align="middle" width="2000"/>  |
+* Two video files (.avi and .gif) of the episode will be saved, so that you can post it on your project website. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the gif video to see the high-resolution original file. See [here](#introduction).
+* A picture (.png) of the episode will be saved, so that you can use it as a visulizatino of your agents' behavior in your paper. The orignal resolution is the same as that of your screen, which is 1920*1080 in our case, click on the image to see the high-resolution original file.  See [here](#introduction).
 
 ## Baselines and options
 
@@ -254,33 +252,14 @@ scp -r -P 33007 yuhangsong@ca56526248261483.natapp.cc:/home/yuhangsong/Arena/res
 
 ## Benchmarks
 
-| ArenaCrawlerMove-2T1P-v1-Continuous |
-| ------------- |
-| <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
-
-| ArenaCrawlerPush-2T1P-v1-Continuous |
-| ------------- |
-| <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
-
-| ArenaWalkerMove-2T1P-v1-Continuous |
-| ------------- |
-| <img src="./images/ArenaWalkerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
-| Server: Wx1 ready |
-
-| Crossroads-2T1P-v1-Continuous |
-| ------------- |
-| <img src="./images/Crossroads-2T1P-v1-Continuous.gif" align="middle" width="2000"/> |
-| Server: Wx1 ready |
-
-| ArenaCrawlerPush-2T2P-v1-Continuous |
-| ------------- |
-| <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.gif" align="middle" width="2000"/> |
-| Server: H4n running |
-
-| Crossroads-2T2P-v1-Continuous |
-| ------------- |
-| <img src="./images/Crossroads-2T2P-v1-Continuous.gif" align="middle" width="2000"/> |
-| Server: Wx1 running |
+| Games | Visualization | Note |
+| ------------- | ------------- | ------------- |
+| ArenaCrawlerMove-2T1P-v1-Continuous | <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | |
+| ArenaCrawlerPush-2T1P-v1-Continuous | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | |
+| ArenaWalkerMove-2T1P-v1-Continuous | <img src="./images/ArenaWalkerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | Server: Wx1 ready |
+| Crossroads-2T1P-v1-Continuous | <img src="./images/Crossroads-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | Server: Wx1 ready |
+| ArenaCrawlerPush-2T2P-v1-Continuous | <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | Server: H4n running |
+| Crossroads-2T2P-v1-Continuous | <img src="./images/Crossroads-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | Server: Wx1 running |
 
 
 ## Citation
