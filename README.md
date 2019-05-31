@@ -137,31 +137,24 @@ source activate Arena
 
 ### Continuous Action Space
 
-#### Two Players Self-Play
+#### Baseline: Self-Play
 
 Games:
 * ArenaCrawlerMove-2T1P-v1-Continuous
 * ArenaCrawlerPush-2T1P-v1-Continuous
 * ArenaWalkerMove-2T1P-v1-Continuous
 * Crossroads-2T1P-v1-Continuous
-
-Commands, replace GAME_NAME with above games:
-```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
-```
-
-#### Multiple (more than 2) Players Self-Play
-
-Games:
 * Crossroads-2T2P-v1-Continuous
 * ArenaCrawlerPush-2T2P-v1-Continuous
 
 Commands, replace GAME_NAME with above games:
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --reload-playing-agents-principle recent --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --use-linear-lr-decay --entropy-coef 0 --gamma 0.995 --tau 0.95 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
 
 ### Discrete Action Space
+
+#### Baseline: Self-Play
 
 Games:
 * Crossroads-2T1P-v1-Discrete
@@ -169,8 +162,12 @@ Games:
 
 Commands, replace GAME_NAME with above games:
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --trainer ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 33969 --aux 17
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 2.5e-4 --value-loss-coef 0.5 --ppo-epoch 4 --num-processes 16 --num-steps 1024 --num-mini-batch 128 --use-linear-lr-decay --entropy-coef 0.01 --clip-param 0.1 --num-env-steps 100000000 --reload-playing-agents-principle prioritized --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
 ```
+
+Note:
+```--reload-playing-agents-principle prioritized``` only support games of ```2T1P```, which means 2 teams, each team has 1 player.
+For games of ```2T2P``` or others, change it to ```--reload-playing-agents-principle recent``` (recommended)  or ```--reload-playing-agents-principle random```.
 
 ## Visualization
 
@@ -205,16 +202,13 @@ Above example commands runs a self-play with following options and features:
 * ```--reload-playing-agents-principle``` has three options
   * ```recent``` players other than the learning agent are loaded with the most recent checkpoint.
   * ```random``` players other than the learning agent are loaded with the a random checkpoint among all historical checkpoints.
-  * ```prioritized``` players other than the learning agent are loaded with the a random checkpoint sampled according to the winning rate (only valid for competitive two play games).
+  * ```prioritized``` players other than the learning agent are loaded with the a random checkpoint sampled according to the winning rate (only valid for competitive two players' games).
 
 ### Population-based Training
 
 Population-based training is usefull when the game is none-transitive, which means there is no best agent, but there could be a best population.
 Population-based training will train a batch of agents instead of just one.
-Add argument ```--population-number 32``` to enable population base training:
-```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-type visual --recurrent-brain --trainer ppo --use-gae --lr 3e-4 --value-loss-coef 0.5 --ppo-epoch 10 --num-processes 16 --num-steps 2048 --num-mini-batch 16 --gamma 0.995 --tau 0.95 --use-linear-lr-decay --entropy-coef 0 --num-env-steps 100000000 --population-number 32 --reload-playing-agents-principle recent --vis --vis-interval 1 --log-interval 1 --num-eval-episodes 10 --arena-start-index 31969 --aux 17_rb
-```
+Add argument ```--population-number 32``` to enable population base training, for example:
 This will result in training a population of ```32``` agents.
 
 ## Benchmarks (Keep Updating)
