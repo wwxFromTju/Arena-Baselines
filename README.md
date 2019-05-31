@@ -165,6 +165,7 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode train --env-name GAME_NAME --obs-ty
 
 Games:
 * Crossroads-2T1P-v1-Discrete
+* Fighter-2T1P-v1-Discrete
 
 Commands, replace GAME_NAME with above games:
 ```
@@ -225,7 +226,8 @@ This will result in training a population of ```32``` agents.
 | ArenaWalkerMove-2T1P-v1-Continuous | <img src="./images/ArenaWalkerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | Server: H4n running |
 | Crossroads-2T1P-v1-Continuous | <img src="./images/Crossroads-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | |
 | ArenaCrawlerPush-2T2P-v1-Continuous | <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | |
-| Crossroads-2T2P-v1-Continuous | <img src="./images/Crossroads-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | Server: Wx1 running |
+| Crossroads-2T2P-v1-Continuous | <img src="./images/Crossroads-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | Server: Wx1 running self-play, Wx0 running population training |
+| Fighter-2T1P-v1-Discrete | <img src="./images/Fighter-2T1P-v1-Discrete.gif" align="middle" width="2000"/> | Server: Wx1 running |
 
 ## Common Problems
 
