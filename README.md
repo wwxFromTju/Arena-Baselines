@@ -222,7 +222,7 @@ This will result in training a population of ```32``` agents.
 | ------------- | ------------- | ------------- |
 | ArenaCrawlerMove-2T1P-v1-Continuous | <img src="./images/ArenaCrawlerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | |
 | ArenaCrawlerPush-2T1P-v1-Continuous | <img src="./images/ArenaCrawlerPush-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | |
-| ArenaWalkerMove-2T1P-v1-Continuous | <img src="./images/ArenaWalkerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | Server: rerun |
+| ArenaWalkerMove-2T1P-v1-Continuous | <img src="./images/ArenaWalkerMove-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | Server: H4n running |
 | Crossroads-2T1P-v1-Continuous | <img src="./images/Crossroads-2T1P-v1-Continuous.gif" align="middle" width="2000"/> | |
 | ArenaCrawlerPush-2T2P-v1-Continuous | <img src="./images/ArenaCrawlerPush-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | |
 | Crossroads-2T2P-v1-Continuous | <img src="./images/Crossroads-2T2P-v1-Continuous.gif" align="middle" width="2000"/> | Server: Wx1 running |

@@ -143,8 +143,8 @@ class MultiAgentCluster(object):
             '''update current'''
             current_checkpoint_by_index = np.where(
                 self.checkpoints_reward_record == self.playing_agents[0].current_checkpoint_by_frame)[0][0]
-            record_update_target = self.learning_agents[0].episode_scaler_summary.to_mean()[
-                'raw']
+            record_update_target = self.learning_agents[0].episode_scaler_summary.summary(
+                mode='mean')['raw']
             print('# INFO: checkpoints_reward_record of {} is being updated from {} to {} (from {} episodes)'.format(
                 self.playing_agents[0].current_checkpoint_by_frame,
                 self.checkpoints_reward_record[current_checkpoint_by_index,
