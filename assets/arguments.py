@@ -16,7 +16,7 @@ def get_args():
                             [eval_round: evaluate agent against agent]\
                             [scaler2fig: convert scalers logged in tensorboardX to fig]')
 
-    '''general and import settings'''
+    '''general settings'''
     parser.add_argument('--env-name',
                         help='[general][environment to train on]')
     parser.add_argument('--obs-type', default='visual',
@@ -70,11 +70,13 @@ def get_args():
     parser.add_argument('--use-linear-clip-decay', action='store_true', default=False,
                         help='[trainer][use a linear schedule on the ppo clipping parameter]')
 
-    '''settings for self-play'''
-    parser.add_argument('--reload-playing-agents-interval', type=int, default=(60 * 0),
-                        help='[self-play][interval to switch component in seconds]')
+    '''settings for multi-agent training scheme'''
+    parser.add_argument('--population-number', type=int, default=1,
+                        help='[multi-agent][number of agents in population train]')
+    parser.add_argument('--reload-agents-interval', type=int, default=(60 * 0),
+                        help='[multi-agent][interval to switch component in seconds]')
     parser.add_argument('--reload-playing-agents-principle', type=str, default=50,
-                        help='[self-play][principle of choosing a component]\
+                        help='[multi-agent][principle of choosing a component]\
                             [\
                                 recent(the most recent checkpoint),\
                                 uniform(uniformly sample from historical checkpoint),\
@@ -126,7 +128,10 @@ def get_args():
     '''trainer'''
     args.log_dir = os.path.join(args.log_dir, 'ti-{}'.format(args.trainer_id))
 
-    '''self-play'''
+    '''multi-agent baseline'''
+    if args.population_number > 1:
+        args.log_dir = os.path.join(
+            args.log_dir, 'pn-{}'.format(args.population_number))
     args.log_dir = os.path.join(
         args.log_dir, 'sscp-{}'.format(args.reload_playing_agents_principle))
 

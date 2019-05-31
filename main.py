@@ -106,6 +106,8 @@ def main():
             ppo_epoch=args.ppo_epoch,
             num_mini_batch=args.num_mini_batch,
 
+            population_number=args.population_number,
+
             log_interval=args.log_interval,
             vis=args.vis,
             vis_interval=args.vis_interval,
@@ -117,7 +119,7 @@ def main():
         learning_agent_id=learning_agent_id,
         store_interval=args.store_interval,
         log_dir=args.log_dir,
-        reload_playing_agents_interval=args.reload_playing_agents_interval,
+        reload_agents_interval=args.reload_agents_interval,
         reload_playing_agents_principle=args.reload_playing_agents_principle,
         tf_summary=tf_summary,
     )

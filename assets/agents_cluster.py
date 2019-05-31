@@ -9,7 +9,7 @@ class MultiAgentCluster(object):
     """docstring for MultiAgentCluster."""
 
     def __init__(self, agents, learning_agent_id, store_interval, log_dir,
-                 reload_playing_agents_interval, reload_playing_agents_principle, tf_summary):
+                 reload_agents_interval, reload_playing_agents_principle, tf_summary):
         super(MultiAgentCluster, self).__init__()
         self.all_agents = agents
         self.learning_agent_id = learning_agent_id
@@ -23,8 +23,8 @@ class MultiAgentCluster(object):
         self.store_interval = store_interval
         self.last_time_store = time.time()
 
-        self.reload_playing_agents_interval = reload_playing_agents_interval
-        self.last_time_reload_playing_agents = time.time()
+        self.reload_agents_interval = reload_agents_interval
+        self.last_time_reload_agents = time.time()
         self.reload_playing_agents_principle = reload_playing_agents_principle
 
         self.checkpoints_reward_record = None
@@ -128,12 +128,15 @@ class MultiAgentCluster(object):
                     self.checkpoints_reward_record.shape,
                 ))
             except Exception as e:
-                print('# WARNING: No checkpoint for checkpoints_reward_record found.')
+                print(
+                    '# WARNING: No checkpoint for checkpoints_reward_record found.')
 
     def reload_playing_agents(self):
-        print('# INFO: Reloading playing agent with principle of {}'.format(
-            self.reload_playing_agents_principle
-        ))
+        '''reload playing agent will restore a new checkpoint'''
+
+        # print('# INFO: Reloading playing agent with principle of {}'.format(
+        #     self.reload_playing_agents_principle
+        # ))
 
         if self.reload_playing_agents_principle in ['prioritized']:
 
@@ -192,6 +195,12 @@ class MultiAgentCluster(object):
             for agent in self.playing_agents:
                 agent.restore(principle=self.reload_playing_agents_principle)
 
+    def reload_learning_agents(self):
+        '''reload learning agent will store agent first and then restore it, during which population id is re-generated'''
+        for agent in self.learning_agents:
+            agent.store()
+            agent.restore(principle='recent')
+
     def after_rollout(self):
         '''for all agents'''
         for agent in self.all_agents:
@@ -207,9 +216,11 @@ class MultiAgentCluster(object):
                 input('# ACTION REQUIRED: Train end.')
 
         '''for playing_agents'''
-        if ((time.time() - self.last_time_reload_playing_agents) > self.reload_playing_agents_interval):
-            self.last_time_reload_playing_agents = time.time()
+        if ((time.time() - self.last_time_reload_agents) > self.reload_agents_interval):
+            self.last_time_reload_agents = time.time()
+            print('# INFO: Reloading agents')
             self.reload_playing_agents()
+            self.reload_learning_agents()
 
         '''for all'''
         if ((time.time() - self.last_time_store) > self.store_interval):

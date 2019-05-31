@@ -10,7 +10,7 @@ class Agent(object):
     """docstring for Agent."""
 
     def __init__(self, id, envs, recurrent_brain, num_processes, num_steps, use_linear_lr_decay, use_linear_clip_decay, use_gae, gamma, tau, num_env_steps, num_updates, log_dir, tf_summary, cuda, device,
-                 trainer_id, value_loss_coef, entropy_coef, lr, eps, alpha, max_grad_norm, clip_param, ppo_epoch, num_mini_batch, log_interval, vis, vis_interval):
+                 trainer_id, value_loss_coef, entropy_coef, lr, eps, alpha, max_grad_norm, clip_param, ppo_epoch, num_mini_batch, population_number, log_interval, vis, vis_interval):
         super(Agent, self).__init__()
 
         '''basic'''
@@ -35,6 +35,9 @@ class Agent(object):
         self.trainer_id = trainer_id
         self.lr = lr
         self.clip_param = clip_param
+
+        '''multi-agent'''
+        self.population_number = population_number
 
         '''log'''
         self.log_interval = log_interval
@@ -96,6 +99,9 @@ class Agent(object):
             self.test_obs = True
 
         self.obs_video = None
+
+    def randomlize_population_id(self):
+        self.population_id = np.random.randint(self.population_number)
 
     def reset(self, obs):
         self.rollouts.obs[0].copy_(obs)
@@ -271,6 +277,7 @@ class Agent(object):
                 uniform: uniformly sampled from all historical checkpoints
                 XX_th: the XX-th checkpoint
         '''
+        self.randomlize_population_id()
         try:
             possible_checkpoints = self.get_possible_checkpoints()
             checkpoint = self.get_checkpoint(possible_checkpoints, principle)
@@ -292,18 +299,42 @@ class Agent(object):
             save_model = copy.deepcopy(self.brain).cpu()
         save_model = [save_model,
                       getattr(get_vec_normalize(self.envs), 'ob_rms', None)]
-        torch.save(save_model, os.path.join(self.log_dir, 'agent_{}'.format(
-            checkpoint,
-        ) + ".pt"))
+        torch.save(
+            save_model,
+            os.path.join(
+                self.log_dir,
+                self.add_population_id_to_checkpoint_name(
+                    'agent_{}.pt'.format(
+                        checkpoint,
+                    )
+                )
+            )
+        )
         np.save(
             os.path.join(self.log_dir, "update_i.npy"),
             np.array([self.update_i]),
         )
 
+    def add_population_id_to_checkpoint_name(self, agent_checkpoint_name):
+        if self.population_number > 1:
+            agent_checkpoint_name = '{}_{}'.format(
+                self.population_id,
+                agent_checkpoint_name,
+            )
+        return agent_checkpoint_name
+
     def restore_from_checkpoint(self, checkpoint):
-        self.brain, ob_rms = torch.load(os.path.join(self.log_dir, 'agent_{}.pt'.format(
-            checkpoint,
-        )))
+
+        self.brain, ob_rms = torch.load(
+            os.path.join(
+                self.log_dir,
+                self.add_population_id_to_checkpoint_name(
+                    'agent_{}.pt'.format(
+                        checkpoint,
+                    )
+                )
+            )
+        )
         if self.cuda:
             self.brain = self.brain.cuda()
         self.envs.ob_rms = ob_rms
@@ -316,8 +347,9 @@ class Agent(object):
         '''get possible_checkpoints'''
         import glob
         import os
+
         possible_checkpoints = []
-        for file in glob.glob(os.path.join(self.log_dir, 'agent_*.pt')):
+        for file in glob.glob(os.path.join(self.log_dir, self.add_population_id_to_checkpoint_name('agent_*.pt'))):
             possible_checkpoints += [int(file.split(self.log_dir)
                                          [1].split('.pt')[0].split('agent_')[1])]
         possible_checkpoints = np.asarray(possible_checkpoints)
