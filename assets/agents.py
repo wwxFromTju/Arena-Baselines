@@ -44,15 +44,7 @@ class Agent(object):
         self.vis = vis
         self.vis_interval = vis_interval
 
-        '''build policy'''
-        base_kwargs = {'recurrent': self.recurrent_brain}
-        if len(self.envs.observation_space.shape) == 1:
-            # for ram obs, the hidden_size should be same as the obs size, but not smaller than 64
-            base_kwargs['hidden_size'] = max(
-                int(self.envs.observation_space.shape[0]), 64)
-        from .brains import Policy
-        self.brain = Policy(self.envs.observation_space.shape, self.envs.action_space,
-                            base_kwargs=base_kwargs).to(self.device)
+        self.brain = self.build_brain()
 
         self.update_i = 0
         self.num_trained_frames_start = self.get_num_trained_frames()
@@ -99,6 +91,17 @@ class Agent(object):
             self.test_obs = True
 
         self.obs_video = None
+
+    def build_brain(self):
+        '''build policy'''
+        base_kwargs = {'recurrent': self.recurrent_brain}
+        if len(self.envs.observation_space.shape) == 1:
+            # for ram obs, the hidden_size should be same as the obs size, but not smaller than 64
+            base_kwargs['hidden_size'] = max(
+                int(self.envs.observation_space.shape[0]), 64)
+        from .brains import Policy
+        return Policy(self.envs.observation_space.shape, self.envs.action_space,
+                      base_kwargs=base_kwargs).to(self.device)
 
     def randomlize_population_id(self):
         self.population_id = np.random.randint(self.population_number)
@@ -288,7 +291,13 @@ class Agent(object):
 
         except Exception as e:
             print(
-                '# WARNING: [Agent {}][Restore failed: {}]'.format(self.id, e))
+                '# WARNING: [Agent {}][Restore failed: {}][reinitialize agent and store]'.format(self.id, e))
+            torch.manual_seed(self.population_id)
+            torch.manual_seed_all(self.population_id)
+            torch.cuda.manual_seed(self.population_id)
+            torch.cuda.manual_seed_all(self.population_id)
+            self.brain = self.build_brain()
+            self.store()
 
     def store_to_checkpoint(self, checkpoint):
         import copy
