@@ -267,5 +267,5 @@ def make_arena(env_name, max_episode_steps, num_env, use_visual, start_index, de
         use_visual=use_visual,
     )
     from .envs import wrapper_envs_after_vec
-    envs = wrapper_envs_after_vec(envs, device, gamma)
+    envs = wrapper_envs_after_vec(envs, device, gamma, num_frame_stack=2)
     return envs
