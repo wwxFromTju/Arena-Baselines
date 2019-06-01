@@ -9,21 +9,16 @@ from .logger import EpisodeScalerSummary
 class Agent(object):
     """docstring for Agent."""
 
-    def __init__(self, id, envs, recurrent_brain, num_processes, num_steps, use_linear_lr_decay, use_linear_clip_decay, use_gae, gamma, tau, num_env_steps, num_updates, log_dir, tf_summary, cuda, device,
-                 trainer_id, value_loss_coef, entropy_coef, lr, eps, alpha, max_grad_norm, clip_param, ppo_epoch, num_mini_batch, population_number, log_interval, vis, vis_interval):
+    def __init__(self, id, mode, envs, recurrent_brain, num_processes, num_steps, use_linear_lr_decay, use_linear_clip_decay, use_gae, gamma, tau, num_env_steps, num_updates, log_dir, tf_summary, cuda, device,
+                 trainer_id, value_loss_coef, entropy_coef, lr, eps, alpha, max_grad_norm, clip_param, ppo_epoch, num_mini_batch, population_number):
         super(Agent, self).__init__()
 
-        '''basic'''
+        '''basic settings and references'''
         self.id = id
+        self.mode = mode
         self.envs = envs
-        self.recurrent_brain = recurrent_brain
         self.num_processes = num_processes
         self.num_steps = num_steps
-        self.use_linear_lr_decay = use_linear_lr_decay
-        self.use_linear_clip_decay = use_linear_clip_decay
-        self.use_gae = use_gae
-        self.gamma = gamma
-        self.tau = tau
         self.num_env_steps = num_env_steps
         self.num_updates = num_updates
         self.log_dir = log_dir
@@ -31,41 +26,43 @@ class Agent(object):
         self.cuda = cuda
         self.device = device
 
-        '''brain'''
+        '''brain settings'''
+        self.recurrent_brain = recurrent_brain
+
+        '''trainer settings'''
         self.trainer_id = trainer_id
         self.lr = lr
         self.clip_param = clip_param
+        self.use_linear_lr_decay = use_linear_lr_decay
+        self.use_linear_clip_decay = use_linear_clip_decay
+        self.use_gae = use_gae
+        self.gamma = gamma
+        self.tau = tau
 
-        '''multi-agent'''
+        '''multi-agent settings'''
         self.population_number = population_number
-
-        '''log'''
-        self.log_interval = log_interval
-        self.vis = vis
-        self.vis_interval = vis_interval
+        self.population_id = None
 
         self.brain = self.build_brain()
 
-        self.update_i = 0
-        self.num_trained_frames_start = self.get_num_trained_frames()
-
-        '''build trainer'''
-        if self.trainer_id == 'a2c':
-            from .trainers import A2C_ACKTR
-            self.trainer = A2C_ACKTR(self.brain, value_loss_coef,
-                                     entropy_coef, lr=self.lr,
-                                     eps=eps, alpha=alpha,
-                                     max_grad_norm=max_grad_norm)
-        elif self.trainer_id == 'ppo':
-            from .trainers import PPO
-            self.trainer = PPO(self.brain, self.clip_param, ppo_epoch, num_mini_batch,
-                               value_loss_coef, entropy_coef, lr=self.lr,
-                               eps=eps,
-                               max_grad_norm=max_grad_norm)
-        elif self.trainer_id == 'acktr':
-            from .trainers import A2C_ACKTR
-            self.trainer = A2C_ACKTR(self.brain, value_loss_coef,
-                                     entropy_coef, acktr=True)
+        if self.mode in ['learning']:
+            '''build trainer'''
+            if self.trainer_id == 'a2c':
+                from .trainers import A2C_ACKTR
+                self.trainer = A2C_ACKTR(self.brain, value_loss_coef,
+                                         entropy_coef, lr=self.lr,
+                                         eps=eps, alpha=alpha,
+                                         max_grad_norm=max_grad_norm)
+            elif self.trainer_id == 'ppo':
+                from .trainers import PPO
+                self.trainer = PPO(self.brain, self.clip_param, ppo_epoch, num_mini_batch,
+                                   value_loss_coef, entropy_coef, lr=self.lr,
+                                   eps=eps,
+                                   max_grad_norm=max_grad_norm)
+            elif self.trainer_id == 'acktr':
+                from .trainers import A2C_ACKTR
+                self.trainer = A2C_ACKTR(self.brain, value_loss_coef,
+                                         entropy_coef, acktr=True)
 
         '''build rollouts'''
         from assets.storage import RolloutStorage
@@ -76,15 +73,20 @@ class Agent(object):
                                        save_cuda_mem=True
                                        ).to(self.device)
 
-        self.episode_scaler_summary = EpisodeScalerSummary(['raw', 'len'])
+        '''initialize training progress'''
+        if self.mode in ['learning']:
+            self.update_i = 0
+            self.num_trained_frames_start = self.get_num_trained_frames()
 
-        self.time_start = time.time()
         self.step_i = 0
-
+        self.episode_scaler_summary = EpisodeScalerSummary(['raw', 'len'])
+        self.time_start = time.time()
         self.current_checkpoint_by_frame = 0
 
+        '''prepare for test_obs'''
         if len(self.envs.observation_space.shape) == 1:
-            # ram obs does not supporte test_obs
+            print(
+                '# INFO: ram obs does not supporte test_obs, no video will be logged to tensorboard')
             self.test_obs = False
         else:
             # visual obs support test_obs, this will log the video of first episode since this run to tensorboard
@@ -93,49 +95,63 @@ class Agent(object):
         self.obs_video = None
 
     def build_brain(self):
-        '''build policy'''
+        '''build brain'''
         base_kwargs = {'recurrent': self.recurrent_brain}
         if len(self.envs.observation_space.shape) == 1:
             # for ram obs, the hidden_size should be same as the obs size, but not smaller than 64
             base_kwargs['hidden_size'] = max(
                 int(self.envs.observation_space.shape[0]), 64)
+
         from .brains import Policy
         return Policy(self.envs.observation_space.shape, self.envs.action_space,
                       base_kwargs=base_kwargs).to(self.device)
 
+    def get_log_tag(self):
+        return 'Agent {} Population {}'.format(self.id, self.population_id)
+
     def randomlize_population_id(self):
+        '''randomlize the population id'''
+        self.previous_population_id = self.population_id
         self.population_id = np.random.randint(self.population_number)
-        print('# INFO: [Agent {} Population {}][Regenerate population_id: {}]'.format(
-            self.id, self.population_id, self.population_id))
+
+        print('# INFO: [{}][Population_id updated from {} to {}]'.format(
+            self.get_log_tag(),
+            self.previous_population_id,
+            self.population_id,
+        ))
 
     def reset(self, obs):
         self.rollouts.obs[0].copy_(obs)
 
     def schedule_trainer(self):
-        '''update schedule'''
-        if self.use_linear_lr_decay:
-            '''decrease learning rate linearly'''
-            if self.trainer_id == "acktr":
-                '''use optimizer's learning rate since it's hard-coded in kfac.py'''
-                update_linear_schedule(
-                    self.trainer.optimizer, self.update_i, self.num_updates, self.trainer.optimizer.lr)
-            else:
-                update_linear_schedule(
-                    self.trainer.optimizer, self.update_i, self.num_updates, self.lr)
 
-        '''clip parameters'''
-        if self.trainer_id == 'ppo' and self.use_linear_clip_decay:
-            self.trainer.clip_param = self.clip_param * \
-                (1 - self.update_i / float(self.num_updates))
+        if self.mode in ['learning']:
+            '''update schedule'''
+            if self.use_linear_lr_decay:
+                '''decrease learning rate linearly'''
+                if self.trainer_id == "acktr":
+                    '''use optimizer's learning rate since it's hard-coded in kfac.py'''
+                    update_linear_schedule(
+                        self.trainer.optimizer, self.update_i, self.num_updates, self.trainer.optimizer.lr)
+                else:
+                    update_linear_schedule(
+                        self.trainer.optimizer, self.update_i, self.num_updates, self.lr)
 
-    def act(self, obs, mode):
+            '''clip parameters'''
+            if self.trainer_id == 'ppo' and self.use_linear_clip_decay:
+                self.trainer.clip_param = self.clip_param * \
+                    (1 - self.update_i / float(self.num_updates))
+
+        else:
+            input('# ACTION REQUIRED: only learning agent can call schedule_trainer()')
+
+    def act(self, obs, deterministic):
+
+        if self.mode in ['playing']:
+            # playing agent are always act deterministic
+            deterministic = True
 
         self.test_obs_at_act(obs)
-
-        if mode in ['playing']:
-            deterministic = True
-        elif mode in ['learning']:
-            deterministic = False
 
         with torch.no_grad():
             obs, recurrent_hidden_states, masks = self.rollouts.get_policy_inputs(
@@ -161,6 +177,7 @@ class Agent(object):
             'raw': reward[0].squeeze().item(),
             'len': 1.0,
         })
+
         if done[0]:
             self.episode_scaler_summary.at_done()
             self.test_obs_at_done()
@@ -192,57 +209,75 @@ class Agent(object):
         return (self.step_i < self.num_steps)
 
     def after_rollout(self):
+        '''called after a rollout'''
+
         if not self.experience_not_enough():
             self.step_i = 0
 
-    def update(self):
-        '''prepare for update'''
-        with torch.no_grad():
-            obs, recurrent_hidden_states, masks = self.rollouts.get_policy_inputs(
-                -1)
-            next_value = self.brain.get_value(
-                inputs=obs,
-                rnn_hxs=recurrent_hidden_states,
-                masks=masks,
-            ).detach()
-        self.rollouts.compute_returns(
-            next_value, self.use_gae, self.gamma, self.tau)
-        '''update'''
-        value_loss, action_loss, dist_entropy = self.trainer.update(
-            self.rollouts)
+        if self.mode in ['learning']:
+            self.update_brain()
 
-        self.rollouts.after_update()
+    def update_brain(self):
 
-        '''log info by print'''
-        if self.update_i % self.log_interval == 0:
-            print(self.to_print_str('learning'))
+        if self.mode in ['learning']:
+            '''update brain from rollouts'''
 
-        '''vis curves'''
-        if self.vis and self.update_i % self.vis_interval == 0:
-            self.vis_curves('learning')
+            '''prepare for update brain'''
+            with torch.no_grad():
+                obs, recurrent_hidden_states, masks = self.rollouts.get_policy_inputs(
+                    -1)
+                next_value = self.brain.get_value(
+                    inputs=obs,
+                    rnn_hxs=recurrent_hidden_states,
+                    masks=masks,
+                ).detach()
+            self.rollouts.compute_returns(
+                next_value, self.use_gae, self.gamma, self.tau)
+
+            '''update brain'''
+            value_loss, action_loss, dist_entropy = self.trainer.update(
+                self.rollouts)
+
+            self.rollouts.after_update()
+
+            '''log info by print'''
+            print(self.to_print_str())
+
+            '''vis curves'''
+            self.vis_curves()
+
+            self.update_i += 1
+            if self.update_i == self.num_updates:
+                input('# ACTION REQUIRED: Train end.')
+
+        else:
+            input('# ACTION REQUIRED: only learning agent can call update_brain()')
 
     def get_num_trained_frames(self):
-        return self.update_i * self.num_processes * self.num_steps
+        if self.mode in ['learning']:
+            return self.update_i * self.num_processes * self.num_steps
+        else:
+            input(
+                '# ACTION REQUIRED: only learning agent can call get_num_trained_frames()')
 
-    def to_print_str(self, mode):
+    def to_print_str(self):
 
         print_str = ''
 
         '''basic info'''
-        print_str += "# INFO: [Agent {} Population {}][{}]".format(
-            self.id,
-            self.population_id,
-            mode,
+        print_str += "# INFO: [{}][{}]".format(
+            self.get_log_tag(),
+            self.mode,
         )
 
         '''learning info'''
-        if mode in ['learning']:
+        if self.mode in ['learning']:
             end = time.time()
             FPS = ((self.get_num_trained_frames() + self.num_processes * self.num_steps) -
                    self.num_trained_frames_start) / (time.time() - self.time_start)
-            print_str += "[{}/{}][F-{}][FPS {}][Remain {:.2f} hrs]".format(
+            print_str += "[{}/{} Updates][{}/{} Frames][FPS {}][Remain {:.2f} hrs]".format(
                 self.update_i, self.num_updates,
-                self.get_num_trained_frames(),
+                self.get_num_trained_frames(), self.num_env_steps,
                 int(FPS),
                 ((self.num_env_steps - self.get_num_trained_frames()) / FPS / 60.0 / 60.0),
             )
@@ -252,31 +287,35 @@ class Agent(object):
 
         return print_str
 
-    def vis_curves(self, mode):
-        if self.episode_scaler_summary.get_length() > 0:
+    def vis_curves(self):
 
-            '''update curves and clear episode_scaler_summary'''
-            for summary_mode in ['min', 'mean', 'max', 'recent']:
-                tmp = self.episode_scaler_summary.summary(mode=summary_mode)
-                for key in tmp.keys():
-                    self.tf_summary.add_scalar(
-                        '{}/{}_{}'.format(mode, key, summary_mode),
-                        tmp[key],
-                        self.get_num_trained_frames(),
-                    )
-            self.episode_scaler_summary.reset()
+        if self.mode in ['learning']:
+            '''update curves'''
+            if self.episode_scaler_summary.get_length() > 0:
+                for summary_mode in ['min', 'mean', 'max', 'recent']:
+                    tmp = self.episode_scaler_summary.summary(
+                        mode=summary_mode)
+                    for key in tmp.keys():
+                        self.tf_summary.add_scalar(
+                            '{}/{}_{}'.format(self.mode, key, summary_mode),
+                            tmp[key],
+                            self.get_num_trained_frames(),
+                        )
+
+        else:
+            input('# ACTION REQUIRED: only learning agent can call vis_curves()')
 
     def store(self):
         try:
             checkpoint = self.get_num_trained_frames()
             self.store_to_checkpoint(checkpoint)
             self.current_checkpoint_by_frame = checkpoint
-            print('# INFO: [Agent {} Population {}][Store to checkpoint {} ok]'.format(
-                self.id, self.population_id, checkpoint))
+            print('# INFO: [{}][Store to checkpoint {} ok]'.format(
+                self.get_log_tag(), checkpoint))
 
         except Exception as e:
-            print('# WARNING: [Agent {} Population {}][Store failed: {}]'.format(
-                self.id, self.population_id, e))
+            print('# WARNING: [{}][Store failed: {}]'.format(
+                self.get_log_tag(), e))
 
     def restore(self, principle='recent'):
         '''
@@ -285,27 +324,30 @@ class Agent(object):
                 uniform: uniformly sampled from all historical checkpoints
                 XX_th: the XX-th checkpoint
         '''
-        self.randomlize_population_id()
         try:
             possible_checkpoints = self.get_possible_checkpoints()
             checkpoint = self.get_checkpoint(possible_checkpoints, principle)
             self.restore_from_checkpoint(checkpoint)
             self.current_checkpoint_by_frame = checkpoint
-            print('# INFO: [Agent {} Population {}][Restore checkpoint {} ok from {} possible checkpoints, following principle of {}]'.format(
-                self.id, self.population_id, checkpoint, len(possible_checkpoints), principle))
+            print('# INFO: [{}][Restore checkpoint {} ok from {} possible checkpoints, following principle of {}]'.format(
+                self.get_log_tag(), checkpoint, len(possible_checkpoints), principle))
 
         except Exception as e:
             print(
-                '# WARNING: [Agent {} Population {}][Restore failed: {}][reinitialize agent and store]'.format(self.id, self.population_id, e))
+                '# WARNING: [{}][Restore failed: {}][reinitialize agent and store]'.format(self.get_log_tag(), e))
+
+            '''reinitialize agent'''
             torch.manual_seed(self.population_id)
             torch.cuda.manual_seed_all(self.population_id)
             self.brain = self.build_brain()
+
             self.store()
 
     def store_to_checkpoint(self, checkpoint):
         import copy
         from .utils import get_vec_normalize
-        # A really ugly way to save a model to CPU
+
+        '''store brain to CPU'''
         save_model = self.brain
         if self.cuda:
             save_model = copy.deepcopy(self.brain).cpu()
@@ -322,10 +364,13 @@ class Agent(object):
                 )
             )
         )
-        np.save(
-            os.path.join(self.log_dir, "update_i.npy"),
-            np.array([self.update_i]),
-        )
+
+        if self.mode in ['learning']:
+            '''store training progress'''
+            np.save(
+                os.path.join(self.log_dir, "update_i.npy"),
+                np.array([self.update_i]),
+            )
 
     def add_population_id_to_checkpoint_name(self, agent_checkpoint_name):
         if self.population_number > 1:
@@ -336,7 +381,7 @@ class Agent(object):
         return agent_checkpoint_name
 
     def restore_from_checkpoint(self, checkpoint):
-
+        '''restore brain'''
         self.brain, ob_rms = torch.load(
             os.path.join(
                 self.log_dir,
@@ -350,10 +395,13 @@ class Agent(object):
         if self.cuda:
             self.brain = self.brain.cuda()
         self.envs.ob_rms = ob_rms
-        self.update_i = np.load(
-            os.path.join(self.log_dir, "update_i.npy"),
-        )[0]
-        self.num_trained_frames_start = self.get_num_trained_frames()
+
+        if self.mode in ['learning']:
+            '''restore training progress'''
+            self.update_i = np.load(
+                os.path.join(self.log_dir, "update_i.npy"),
+            )[0]
+            self.num_trained_frames_start = self.get_num_trained_frames()
 
     def get_possible_checkpoints(self):
         '''get possible_checkpoints'''

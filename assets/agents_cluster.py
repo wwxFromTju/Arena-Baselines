@@ -41,7 +41,7 @@ class MultiAgentCluster(object):
         for agent in self.all_agents:
             agent.reset(obs[:, agent.id])
 
-    def schedule(self):
+    def before_rollout(self):
         for agent in self.learning_agents:
             agent.schedule_trainer()
 
@@ -51,12 +51,12 @@ class MultiAgentCluster(object):
 
         return self.learning_agents[0].experience_not_enough()
 
-    def act(self, obs, learning_agents_mode):
+    def act(self, obs, deterministic):
         action = []
         for agent in self.all_agents:
             action += [agent.act(
                 obs=obs[:, agent.id],
-                mode=learning_agents_mode if agent.id == self.learning_agent_id else 'playing',
+                deterministic=deterministic,
             ).unsqueeze(1)]
         return torch.cat(action, 1)
 
@@ -114,7 +114,8 @@ class MultiAgentCluster(object):
         print('# INFO: Restoring MultiAgentCluster')
 
         '''restore learning_agents'''
-        for agent in self.all_agents:
+        for agent in self.learning_agents:
+            agent.randomlize_population_id()
             agent.restore(principle='recent')
 
         if self.checkpoints_reward_record is not None:
@@ -134,11 +135,14 @@ class MultiAgentCluster(object):
     def reload_playing_agents(self):
         '''reload playing agent will restore a new checkpoint'''
 
-        # print('# INFO: Reloading playing agent with principle of {}'.format(
-        #     self.reload_playing_agents_principle
-        # ))
+        for agent in self.playing_agents:
+            agent.randomlize_population_id()
 
         if self.reload_playing_agents_principle in ['prioritized']:
+
+            if ((len(self.learning_agents) != 1) or (len(self.playing_agents) != 1) or (self.playing_agents[0].population_number != 1)):
+                input(
+                    '# ACTION REQUIRED: prioritized only supports two player game with population_number=1')
 
             '''update current'''
             current_checkpoint_by_index = np.where(
@@ -199,6 +203,7 @@ class MultiAgentCluster(object):
         '''reload learning agent will store agent first and then restore it, during which population id is re-generated'''
         for agent in self.learning_agents:
             agent.store()
+            agent.randomlize_population_id()
             agent.restore(principle='recent')
 
     def after_rollout(self):
@@ -206,27 +211,16 @@ class MultiAgentCluster(object):
         for agent in self.all_agents:
             agent.after_rollout()
 
-        '''for learning_agents'''
-        '''currently only support one learning_agent'''
-        assert len(self.learning_agents) == 1
-        for agent in self.learning_agents:
-            agent.update()
-            agent.update_i += 1
-            if agent.update_i == agent.num_updates:
-                input('# ACTION REQUIRED: Train end.')
-
-        '''for playing_agents'''
+        '''reload agents'''
         if ((time.time() - self.last_time_reload_agents) > self.reload_agents_interval):
             self.last_time_reload_agents = time.time()
-            print('# INFO: Reloading agents')
             self.reload_playing_agents()
             self.reload_learning_agents()
+            # episode_scaler_summary is reset here because reload agent function under some options use episode_scaler_summary
+            for agent in self.all_agents:
+                agent.episode_scaler_summary.reset()
 
         '''for all'''
         if ((time.time() - self.last_time_store) > self.store_interval):
             self.last_time_store = time.time()
             self.store()
-
-    def restore_playing_agents(self, principle):
-        for agent in self.playing_agents:
-            agent.restore(principle=principle)

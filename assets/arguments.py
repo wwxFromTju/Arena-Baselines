@@ -73,10 +73,10 @@ def get_args():
     '''settings for multi-agent training scheme'''
     parser.add_argument('--population-number', type=int, default=1,
                         help='[multi-agent][number of agents in population train]')
-    parser.add_argument('--reload-agents-interval', type=int, default=(60 * 0),
-                        help='[multi-agent][interval to switch component in seconds]')
+    parser.add_argument('--reload-agents-interval', type=int, default=(60 * 1),
+                        help='[multi-agent][interval to reload agents (in seconds)]')
     parser.add_argument('--reload-playing-agents-principle', type=str, default=50,
-                        help='[multi-agent][principle of choosing a component]\
+                        help='[multi-agent][principle of choosing a agents from historical checkpoints]\
                             [\
                                 recent(the most recent checkpoint),\
                                 uniform(uniformly sample from historical checkpoint),\
@@ -89,7 +89,7 @@ def get_args():
     parser.add_argument('--log-interval', type=int, default=10,
                         help='[general][log interval, one log per n updates (default: 10)]')
     parser.add_argument('--store-interval', type=int, default=int(60 * 10),
-                        help='[general][save interval in seconds')
+                        help='[general][save interval (in seconds)')
     parser.add_argument('--vis-interval', type=int, default=100,
                         help='[general][vis interval, one log per n updates (default: 100)]')
     parser.add_argument('--no-cuda', action='store_true', default=False,

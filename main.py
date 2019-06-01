@@ -76,9 +76,10 @@ def main():
     agents = []
     learning_agent_id = 0
     from assets.agents import Agent
-    for i in range(0, num_agents):
+    for id in range(0, num_agents):
         agents += [Agent(
-            id=i,
+            id=id,
+            mode='learning' if (id == learning_agent_id) else 'playing',
             envs=envs_agent_refer,
             recurrent_brain=args.recurrent_brain,
             num_processes=args.num_processes,
@@ -107,10 +108,6 @@ def main():
             num_mini_batch=args.num_mini_batch,
 
             population_number=args.population_number,
-
-            log_interval=args.log_interval,
-            vis=args.vis,
-            vis_interval=args.vis_interval,
         )]
 
     from assets.agents_cluster import MultiAgentCluster
@@ -129,9 +126,9 @@ def main():
     if args.mode in ['train', 'vis_train']:
 
         if args.mode in ['train']:
-            learning_agents_mode = 'learning'
+            deterministic = False
         elif args.mode in ['vis_train']:
-            learning_agents_mode = 'playing'
+            deterministic = True
 
         print('# INFO: Train Starting')
 
@@ -140,9 +137,9 @@ def main():
 
         while True:
 
-            agents.schedule()
+            agents.before_rollout()
 
-            '''interact'''
+            '''rollout'''
             while agents.experience_not_enough():
 
                 if args.mode in ['vis_train']:
@@ -150,7 +147,7 @@ def main():
 
                 action = agents.act(
                     obs=obs,
-                    learning_agents_mode=learning_agents_mode,
+                    deterministic=deterministic,
                 )
 
                 '''step'''

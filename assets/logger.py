@@ -20,7 +20,8 @@ class EpisodeScalerSummary(object):
             for key in self.keys:
                 self.episode_reward[key] += key_value[key]
         else:
-            raise Exception('Must match!')
+            raise Exception(
+                'key_value dic must match the keys you set when create this EpisodeScalerSummary.')
 
     def at_done(self):
         '''call this at episode done'''
@@ -34,6 +35,7 @@ class EpisodeScalerSummary(object):
     def to_print_str(self):
         '''get a print string of final_rewards'''
         print_str = ''
+
         for key in self.keys:
             if len(self.final_rewards[key]) > 0:
                 print_str += '[{} - {:.2f}|{:.2f}|{:.2f}|{} (Min|Mean|Max|Num)]'.format(
@@ -44,10 +46,10 @@ class EpisodeScalerSummary(object):
                     len(self.final_rewards[key]),
                 )
             else:
-                print_str += '[{}-summarizing-{}]'.format(
+                print_str += '[{}-still summarizing the first episode]'.format(
                     key,
-                    self.episode_reward[key],
                 )
+
         return print_str
 
     def get_length(self):
